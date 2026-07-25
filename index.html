@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1920, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Only-HTML Card Engine (Multiplayer Split-Board)</title>
     <!-- PeerJS for Peer-to-Peer Networking -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         /* CSS resets and base styles */
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e262e; color: white; width: 100vw; height: 100vh; overflow: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e262e; color: white; width: 100vw; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         
         /* Navigation & Initialization */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #1a1a1a; position: absolute; width: 100%; z-index: 2000; }
@@ -26,9 +26,20 @@
         .error-content { background: #8b0000; padding: 30px; border-radius: 8px; max-width: 500px; text-align: center; }
         .error-content button { margin-top: 20px; padding: 5px 15px; cursor: pointer; }
 
-        /* Main Game Interface - Seamlessly Integrated Left UI Column */
+        /* Main Game Wrapper - Strict Proportions for any monitor */
+        #game-wrapper {
+            display: none;
+            position: absolute;
+            width: 2560px; /* Maps to 3840 scaled at 150% */
+            height: 1440px; /* Maps to 2160 scaled at 150% */
+            transform-origin: top left;
+            background-color: #1e262e;
+        }
+
+        /* Main Game Interface */
         #game-screen { 
-            display: none; width: 100%; height: 100%; 
+            width: 100%; height: 100%; 
+            display: grid;
             grid-template-columns: 280px 1fr 200px; 
             grid-template-rows: minmax(180px, 1fr) minmax(220px, 1fr) minmax(220px, 1fr) minmax(180px, 1fr); 
             gap: 8px; padding: 8px; 
@@ -42,16 +53,18 @@
         /* Territory Layout */
         #ui-overlay { grid-column: 1 / 2; grid-row: 1 / 5; background: rgba(0,0,0,0.7); padding: 12px; border-radius: 8px; border: 1px solid #444; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; height: 100%; }
         
-        /* Hand & Play Zones updated for dynamic shrinking instead of scrollbars */
+        /* Hand & Play Zones updated */
         #opp-hand-zone { grid-column: 2 / 3; grid-row: 1 / 2; justify-content: center; padding: 35px 10px 10px 10px; overflow: hidden; gap: 6px; border-color: #6a3030; background: rgba(100, 30, 30, 0.1); flex-wrap: nowrap; }
-        #opp-play-zone { grid-column: 2 / 3; grid-row: 2 / 3; flex-wrap: nowrap; align-content: center; justify-content: center; gap: 6px; overflow: hidden; padding: 35px 10px; border-color: #6a3030; background: rgba(100, 30, 30, 0.1); }
+        /* Play zones switched to block display for free-form drag/drop coordinates */
+        #opp-play-zone { grid-column: 2 / 3; grid-row: 2 / 3; display: block; overflow: hidden; border-color: #6a3030; background: rgba(100, 30, 30, 0.1); }
+        #my-play-zone { grid-column: 2 / 3; grid-row: 3 / 4; display: block; overflow: hidden; border-color: #3b7b4b; background: rgba(30, 100, 50, 0.1); }
+        
         #opp-right-panel { grid-column: 3 / 4; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
         
-        #my-play-zone { grid-column: 2 / 3; grid-row: 3 / 4; flex-wrap: nowrap; align-content: center; justify-content: center; gap: 6px; overflow: hidden; padding: 35px 10px; border-color: #3b7b4b; background: rgba(30, 100, 50, 0.1); }
         #my-hand-zone { grid-column: 2 / 3; grid-row: 4 / 5; justify-content: center; padding: 10px 10px 35px 10px; overflow: hidden; gap: 6px; border-color: #3b7b4b; background: rgba(30, 100, 50, 0.1); flex-wrap: nowrap; }
         #my-right-panel { grid-column: 3 / 4; grid-row: 3 / 5; display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
 
-        /* Side Panel Zones: Equal Sizing & Fully Visible without bottom cut off */
+        /* Side Panel Zones */
         .side-zone { flex: 1; border: 2px dashed #555; border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); min-height: 0; overflow: hidden; cursor: pointer; }
         .side-deck { border: 2px solid #666; background: rgba(0,0,0,0.5); box-shadow: inset 0 0 15px #000; cursor: pointer; }
         .side-zone .card { width: 130px; height: 182px; max-width: 90%; max-height: 90%; font-size: 0.8rem; padding: 4px; }
@@ -64,6 +77,8 @@
         }
         .card.facedown { background: repeating-linear-gradient(45deg, #2b4162, #2b4162 10px, #1a283d 10px, #1a283d 20px) !important; border: 2px solid #fff; color: transparent; }
         .card:hover { box-shadow: 0 0 20px gold; z-index: 50; transform: scale(1.05); }
+        
+        /* Rotated cards */
         .card.rotated { transform: rotate(90deg); }
         .card.rotated:hover { transform: rotate(90deg) scale(1.05); }
         
@@ -118,7 +133,7 @@
         .modal-box { background: #222; border: 1px solid #555; border-radius: 8px; width: 450px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
         .modal-box textarea { width: 100%; height: 120px; margin-bottom: 15px; background: #111; color: #fff; padding: 10px; font-family: monospace; border: 1px solid #444; border-radius: 4px; }
 
-        /* Context Menus & Fixed Submenu Overflow Real Estate */
+        /* Context Menus */
         #context-menu { display: none; position: absolute; background: #2b2b2b; border: 1px solid #555; border-radius: 4px; box-shadow: 2px 2px 15px rgba(0,0,0,0.8); z-index: 3000; min-width: 180px; }
         #context-menu ul { list-style: none; }
         #context-menu li { padding: 10px 15px; cursor: pointer; font-size: 0.95rem; border-bottom: 1px solid #333; color: #eee; position: relative; }
@@ -179,117 +194,119 @@
         </div>
     </div>
 
-    <!-- Main Game Screen -->
-    <div id="game-screen">
-        <div id="ui-overlay">
-            <div class="life-counter">
-                <div class="life-row">
-                    <span id="ui-my-name-label">My Life:</span>
-                    <div>
-                        <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: myRole, amount: -1})">-</button>
-                        <span id="my-life-total" style="display:inline-block; width: 35px; text-align: center; font-weight: bold; color: white;">20</span>
-                        <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: myRole, amount: 1})">+</button>
+    <!-- Main Game Screen Canvas (Auto-Scales to fit window) -->
+    <div id="game-wrapper">
+        <div id="game-screen">
+            <div id="ui-overlay">
+                <div class="life-counter">
+                    <div class="life-row">
+                        <span id="ui-my-name-label">My Life:</span>
+                        <div>
+                            <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: myRole, amount: -1})">-</button>
+                            <span id="my-life-total" style="display:inline-block; width: 35px; text-align: center; font-weight: bold; color: white;">20</span>
+                            <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: myRole, amount: 1})">+</button>
+                        </div>
+                    </div>
+                    <div class="life-row">
+                        <span id="ui-opp-name-label">Opp Life:</span>
+                        <div>
+                            <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: oppRole, amount: -1})">-</button>
+                            <span id="opp-life-total" style="display:inline-block; width: 35px; text-align: center; font-weight: bold; color: white;">20</span>
+                            <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: oppRole, amount: 1})">+</button>
+                        </div>
                     </div>
                 </div>
-                <div class="life-row">
-                    <span id="ui-opp-name-label">Opp Life:</span>
-                    <div>
-                        <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: oppRole, amount: -1})">-</button>
-                        <span id="opp-life-total" style="display:inline-block; width: 35px; text-align: center; font-weight: bold; color: white;">20</span>
-                        <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: oppRole, amount: 1})">+</button>
+                <div class="dice-roller">
+                    <button onclick="rollDice(4)">D4</button>
+                    <button onclick="rollDice(6)">D6</button>
+                    <button onclick="rollDice(10)">D10</button>
+                    <button onclick="rollDice(12)">D12</button>
+                    <button onclick="rollDice(20)">D20</button>
+                    <button onclick="rollDice(100)">D100</button>
+                    <button class="coin" onclick="rollCoin()">Flip a Coin</button>
+                </div>
+                <div>
+                    <button onclick="document.getElementById('import-overlay').style.display='block'" style="padding: 10px; width: 100%; cursor: pointer; background: #28a745; color: white; border:none; font-weight:bold; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.4);">Import Deck (Scryfall)</button>
+                </div>
+                <div id="log"></div>
+            </div>
+
+            <div id="import-overlay">
+                <h3 style="margin-bottom: 15px;">Import Deck (Your Deck)</h3>
+                
+                <div class="import-section" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+                    <label style="font-size: 0.9rem; color: #ccc; display: block; margin-bottom: 8px;">Paste MTGTop8/Goldfish List (Auto-fetches art via Scryfall):</label>
+                    <textarea id="deck-list" placeholder="Supports quantities, names, and Scryfall formats:&#10;4 Sleight of Hand&#10;4 Opt (XLN) 65&#10;1 Roaring Furnace // Steaming Sauna"></textarea>
+                    <button onclick="importTextDeck()" style="width: 100%; margin-bottom: 10px; background: #007bff; font-weight: bold;">Fetch & Import Deck</button>
+                </div>
+
+                <div class="import-section">
+                    <button onclick="importPokerDeck()" style="width: 100%; background: #6f42c1; margin-bottom: 10px;">Quick Import: Standard 52 Poker Deck</button>
+                </div>
+
+                <div class="import-section" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <label style="font-size: 0.85rem; color: #ccc;">Import Custom Images (Manual):</label>
+                        <button type="button" onclick="addImageImportRow()" style="background: #3b5bdb; color: white; border: none; width: 26px; height: 26px; font-weight: bold; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Add another image card slot">+</button>
                     </div>
-                </div>
-            </div>
-            <div class="dice-roller">
-                <button onclick="rollDice(4)">D4</button>
-                <button onclick="rollDice(6)">D6</button>
-                <button onclick="rollDice(10)">D10</button>
-                <button onclick="rollDice(12)">D12</button>
-                <button onclick="rollDice(20)">D20</button>
-                <button onclick="rollDice(100)">D100</button>
-                <button class="coin" onclick="rollCoin()">Flip a Coin</button>
-            </div>
-            <div>
-                <button onclick="document.getElementById('import-overlay').style.display='block'" style="padding: 10px; width: 100%; cursor: pointer; background: #28a745; color: white; border:none; font-weight:bold; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.4);">Import Deck (Scryfall)</button>
-            </div>
-            <div id="log"></div>
-        </div>
-
-        <div id="import-overlay">
-            <h3 style="margin-bottom: 15px;">Import Deck (Your Deck)</h3>
-            
-            <div class="import-section" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
-                <label style="font-size: 0.9rem; color: #ccc; display: block; margin-bottom: 8px;">Paste MTGTop8/Goldfish List (Auto-fetches art via Scryfall):</label>
-                <textarea id="deck-list" placeholder="Supports quantities, names, and Scryfall formats:&#10;4 Sleight of Hand&#10;4 Opt (XLN) 65&#10;1 Roaring Furnace // Steaming Sauna"></textarea>
-                <button onclick="importTextDeck()" style="width: 100%; margin-bottom: 10px; background: #007bff; font-weight: bold;">Fetch & Import Deck</button>
-            </div>
-
-            <div class="import-section">
-                <button onclick="importPokerDeck()" style="width: 100%; background: #6f42c1; margin-bottom: 10px;">Quick Import: Standard 52 Poker Deck</button>
-            </div>
-
-            <div class="import-section" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <label style="font-size: 0.85rem; color: #ccc;">Import Custom Images (Manual):</label>
-                    <button type="button" onclick="addImageImportRow()" style="background: #3b5bdb; color: white; border: none; width: 26px; height: 26px; font-weight: bold; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Add another image card slot">+</button>
-                </div>
-                <div id="image-imports-container">
-                    <div class="image-import-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;" data-image-url="">
-                        <div class="paste-box" contenteditable="true" style="flex: 1; background: #111; border: 1px dashed #666; padding: 6px; font-size: 0.85rem; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 30px; display: flex; align-items: center; justify-content: center;" onpaste="handleImagePaste(event, this)" tabindex="0">Click & Press Ctrl+V to Paste Image</div>
-                        <input type="number" class="image-card-qty" value="1" min="1" max="99" style="width: 50px; padding: 3px; background: #111; color: #fff; border: 1px solid #444; text-align: center;" title="Quantity">
+                    <div id="image-imports-container">
+                        <div class="image-import-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;" data-image-url="">
+                            <div class="paste-box" contenteditable="true" style="flex: 1; background: #111; border: 1px dashed #666; padding: 6px; font-size: 0.85rem; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 30px; display: flex; align-items: center; justify-content: center;" onpaste="handleImagePaste(event, this)" tabindex="0">Click & Press Ctrl+V to Paste Image</div>
+                            <input type="number" class="image-card-qty" value="1" min="1" max="99" style="width: 50px; padding: 3px; background: #111; color: #fff; border: 1px solid #444; text-align: center;" title="Quantity">
+                        </div>
                     </div>
+                    <button onclick="importImageDeck()" style="width: 100%; background: #17a2b8; margin-top: 5px; margin-bottom: 10px;">Import Pasted Image Card(s)</button>
                 </div>
-                <button onclick="importImageDeck()" style="width: 100%; background: #17a2b8; margin-top: 5px; margin-bottom: 10px;">Import Pasted Image Card(s)</button>
+
+                <button onclick="document.getElementById('import-overlay').style.display='none'" style="width: 100%; background: #444;">Cancel / Close</button>
             </div>
 
-            <button onclick="document.getElementById('import-overlay').style.display='none'" style="width: 100%; background: #444;">Cancel / Close</button>
-        </div>
+            <!-- OPPONENT TERRITORY (TOP) -->
+            <div id="opp-hand-zone" class="zone">
+                <div class="zone-title" style="top: auto; bottom: 5px;" id="lbl-opp-hand">Opponent Hand</div>
+                <div class="zone-count" id="opp-hand-count">0</div>
+            </div>
+            <div id="opp-play-zone" class="zone">
+                <div class="zone-title" style="top: auto; bottom: 5px;" id="lbl-opp-play">Opponent Play</div>
+                <div class="zone-count" id="opp-play-count">0</div>
+            </div>
+            <div id="opp-right-panel">
+                <div id="opp-exile-zone" class="side-zone">
+                    <div class="zone-title" id="lbl-opp-exile">Opp Exile</div>
+                    <div class="zone-count" id="opp-exile-count">0</div>
+                </div>
+                <div id="opp-graveyard-zone" class="side-zone">
+                    <div class="zone-title" id="lbl-opp-grave">Opp Grave</div>
+                    <div class="zone-count" id="opp-graveyard-count">0</div>
+                </div>
+                <div id="opp-deck-zone" class="side-zone side-deck">
+                    <div class="zone-title" id="lbl-opp-deck">Opp Deck</div>
+                    <div class="zone-count" id="opp-deck-count">0</div>
+                </div>
+            </div>
 
-        <!-- OPPONENT TERRITORY (TOP) -->
-        <div id="opp-hand-zone" class="zone">
-            <div class="zone-title" style="top: auto; bottom: 5px;" id="lbl-opp-hand">Opponent Hand</div>
-            <div class="zone-count" id="opp-hand-count">0</div>
-        </div>
-        <div id="opp-play-zone" class="zone">
-            <div class="zone-title" style="top: auto; bottom: 5px;" id="lbl-opp-play">Opponent Play</div>
-            <div class="zone-count" id="opp-play-count">0</div>
-        </div>
-        <div id="opp-right-panel">
-            <div id="opp-exile-zone" class="side-zone">
-                <div class="zone-title" id="lbl-opp-exile">Opp Exile</div>
-                <div class="zone-count" id="opp-exile-count">0</div>
+            <!-- MY TERRITORY (BOTTOM) -->
+            <div id="my-play-zone" class="zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="zone-title" id="lbl-my-play">My Play</div>
+                <div class="zone-count" id="my-play-count">0</div>
             </div>
-            <div id="opp-graveyard-zone" class="side-zone">
-                <div class="zone-title" id="lbl-opp-grave">Opp Grave</div>
-                <div class="zone-count" id="opp-graveyard-count">0</div>
+            <div id="my-hand-zone" class="zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="zone-title" id="lbl-my-hand">My Hand</div>
+                <div class="zone-count" id="my-hand-count">0</div>
             </div>
-            <div id="opp-deck-zone" class="side-zone side-deck">
-                <div class="zone-title" id="lbl-opp-deck">Opp Deck</div>
-                <div class="zone-count" id="opp-deck-count">0</div>
-            </div>
-        </div>
-
-        <!-- MY TERRITORY (BOTTOM) -->
-        <div id="my-play-zone" class="zone" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <div class="zone-title" id="lbl-my-play">My Play</div>
-            <div class="zone-count" id="my-play-count">0</div>
-        </div>
-        <div id="my-hand-zone" class="zone" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <div class="zone-title" id="lbl-my-hand">My Hand</div>
-            <div class="zone-count" id="my-hand-count">0</div>
-        </div>
-        <div id="my-right-panel">
-            <div id="my-deck-zone" class="side-zone side-deck" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <div class="zone-title" id="lbl-my-deck">My Deck</div>
-                <div class="zone-count" id="my-deck-count">0</div>
-            </div>
-            <div id="my-graveyard-zone" class="side-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <div class="zone-title" id="lbl-my-grave">My Grave</div>
-                <div class="zone-count" id="my-graveyard-count">0</div>
-            </div>
-            <div id="my-exile-zone" class="side-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <div class="zone-title" id="lbl-my-exile">My Exile</div>
-                <div class="zone-count" id="my-exile-count">0</div>
+            <div id="my-right-panel">
+                <div id="my-deck-zone" class="side-zone side-deck" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="zone-title" id="lbl-my-deck">My Deck</div>
+                    <div class="zone-count" id="my-deck-count">0</div>
+                </div>
+                <div id="my-graveyard-zone" class="side-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="zone-title" id="lbl-my-grave">My Grave</div>
+                    <div class="zone-count" id="my-graveyard-count">0</div>
+                </div>
+                <div id="my-exile-zone" class="side-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="zone-title" id="lbl-my-exile">My Exile</div>
+                    <div class="zone-count" id="my-exile-count">0</div>
+                </div>
             </div>
         </div>
     </div>
@@ -314,7 +331,7 @@
             cardIdCounter: 0
         };
 
-        /** MULTI-SELECTION & DRAG STATE **/
+        /** MULTI-SELECTION, DRAG, & SCALING STATE **/
         let draggedCardIds = [];
         let isSelecting = false;
         let selectStartX = 0, selectStartY = 0;
@@ -324,6 +341,10 @@
         const selectedCardIds = new Set();
         let currentSearchZoneKey = null;
         
+        let currentScale = 1; // Dynamic aspect ratio scale factor
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
         /** NETWORKING VARIABLES **/
         const PREFIX = 'html-card-engine-v2-';
         let peer = null;
@@ -339,7 +360,28 @@
         const errorMsg = document.getElementById('error-msg');
         const loadingMsg = document.getElementById('loading-msg');
         const loginScreen = document.getElementById('login-screen');
-        const gameScreen = document.getElementById('game-screen');
+        const gameWrapper = document.getElementById('game-wrapper');
+
+        /** RESIZE HANDLER (SCALING ALGORITHM) **/
+        function resizeUI() {
+            if (gameWrapper.style.display === 'none') return;
+            const winW = window.innerWidth;
+            const winH = window.innerHeight;
+            
+            // Base resolution logic corresponding exactly to a 3840x2160 screen scaled by Windows to 150%
+            const scaleW = winW / 2560;
+            const scaleH = winH / 1440;
+            currentScale = Math.min(scaleW, scaleH);
+            
+            gameWrapper.style.transform = `scale(${currentScale})`;
+            
+            // Keep the canvas perfectly centered in the window viewport
+            const scaledW = 2560 * currentScale;
+            const scaledH = 1440 * currentScale;
+            gameWrapper.style.left = `${(winW - scaledW) / 2}px`;
+            gameWrapper.style.top = `${(winH - scaledH) / 2}px`;
+        }
+        window.addEventListener('resize', resizeUI);
 
         /** LOGIN LOGIC **/
         codeInput.addEventListener('input', (e) => {
@@ -436,7 +478,8 @@
 
         function startGameUI() {
             loginScreen.style.display = 'none';
-            gameScreen.style.display = 'grid';
+            gameWrapper.style.display = 'block';
+            resizeUI(); // Force instant scale calculation before rendering
             renderAll();
         }
 
@@ -502,14 +545,28 @@
                     broadcastLog(`${playerName} shuffled their deck.`);
                     break;
                 case 'MOVE_CARDS':
-                    payload.cardIds.forEach(id => {
+                    let baseStartX = payload.x;
+                    let baseStartY = payload.y;
+                    
+                    // Provides safe cascading drop spots if pushed to play area via context menu without coordinates
+                    if (payload.toZone.startsWith('play') && baseStartX === undefined) {
+                         baseStartX = 100;
+                         baseStartY = 50;
+                    }
+
+                    payload.cardIds.forEach((id, idx) => {
                         const foundInfo = findCardGlobal(id);
                         if (foundInfo) {
                             const card = foundInfo.card;
                             const cardName = card.name || 'Card';
                             const fromZoneStr = getZoneDisplayName(foundInfo.zone);
                             const toZoneStr = getZoneDisplayName(payload.toZone);
-                            executeMoveCard(id, payload.toZone, payload.index);
+                            
+                            // Offset multi-selected cards intelligently so they don't exactly obscure each other
+                            let targetX = baseStartX !== undefined ? baseStartX + (idx * 30) : undefined;
+                            let targetY = baseStartY !== undefined ? baseStartY + (idx * 30) : undefined;
+                            
+                            executeMoveCard(id, payload.toZone, payload.index, targetX, targetY);
                             
                             if (payload.toZone.startsWith('play') && card.facedown) {
                                 broadcastLog(`${playerName} played a face-down card.`);
@@ -603,14 +660,31 @@
             return null;
         }
 
-        function executeMoveCard(cardId, toZone, index) {
+        // Handles extracting and injecting cards for moves
+        function executeMoveCard(cardId, toZone, index, x, y) {
             const foundInfo = findCardGlobal(cardId);
             if (!foundInfo) return;
             
             const foundCard = state.zones[foundInfo.zone].splice(foundInfo.index, 1)[0];
 
+            // Core Rules
+            if (toZone.startsWith('deck')) foundCard.facedown = true; // Auto-facedown rule applies on entry to deck
             if (toZone.startsWith('hand')) foundCard.facedown = false;
             if (!toZone.startsWith('play')) foundCard.rotated = false;
+            
+            // X and Y Coordinate Rules assignment for free-form zones
+            if (toZone.startsWith('play')) {
+                 if (x !== undefined && y !== undefined) {
+                     foundCard.x = x;
+                     foundCard.y = y;
+                 } else if (foundCard.x === undefined || foundInfo.zone !== toZone) {
+                     foundCard.x = 100;
+                     foundCard.y = 100;
+                 }
+            } else {
+                 delete foundCard.x;
+                 delete foundCard.y;
+            }
             
             if (index === 'top') state.zones[toZone].push(foundCard); 
             else if (index === 'bottom') state.zones[toZone].unshift(foundCard); 
@@ -973,6 +1047,14 @@
             
             if (containerId.startsWith('my-')) div.draggable = true;
 
+            // Absolute Positioning Application for the block Play zones
+            if (containerId.includes('play-zone')) {
+                div.style.position = 'absolute';
+                div.style.left = (card.x !== undefined ? card.x : 100) + 'px';
+                div.style.top = (card.y !== undefined ? card.y : 100) + 'px';
+                div.style.margin = '0';
+            }
+
             if (card.facedown) {
                 div.classList.add('facedown');
                 div.style.backgroundImage = '';
@@ -1007,8 +1089,16 @@
                 }
             }
 
+            // Mouse down listener purely to record the grab offset relative to the card dimensions
+            div.addEventListener('mousedown', (e) => {
+                const rect = div.getBoundingClientRect();
+                dragOffsetX = (e.clientX - rect.left) / currentScale;
+                dragOffsetY = (e.clientY - rect.top) / currentScale;
+            });
+
             div.addEventListener('dragstart', (e) => {
                 if (containerId.startsWith('opp-')) { e.preventDefault(); return; }
+                
                 if(!selectedCardIds.has(card.id)) {
                     selectedCardIds.clear();
                     selectedCardIds.add(card.id);
@@ -1131,14 +1221,27 @@
         });
 
         function allowDrop(e) { e.preventDefault(); }
+        
         function drop(e) {
             e.preventDefault();
             let targetUI = e.currentTarget.id;
             if (targetUI.startsWith('opp-')) return; 
 
             let targetGlobalZone = targetUI.replace('my-', '').replace('-zone', '') + '_' + myRole;
+            let payload = { cardIds: draggedCardIds, toZone: targetGlobalZone, index: 'top' };
+            
+            // X and Y calculations strictly when dropping onto Play Area
+            if (targetUI.includes('play')) {
+                const rect = e.currentTarget.getBoundingClientRect();
+                let finalX = ((e.clientX - rect.left) / currentScale) - dragOffsetX;
+                let finalY = ((e.clientY - rect.top) / currentScale) - dragOffsetY;
+                
+                payload.x = finalX;
+                payload.y = finalY;
+            }
+
             if (draggedCardIds && draggedCardIds.length > 0) {
-                requestAction('MOVE_CARDS', { cardIds: draggedCardIds, toZone: targetGlobalZone, index: 'top' });
+                requestAction('MOVE_CARDS', payload);
                 draggedCardIds = [];
             }
         }
