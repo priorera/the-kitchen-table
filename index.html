@@ -23,7 +23,7 @@
 
         /* Generic Error Modal */
         #error-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; }
-        .error-content { background: #8b0000; padding: 30px; border-radius: 8px; max-width: 500px; text-align: center; }
+        .error-content { background: #8b0000; padding: 30px; border-radius: 8px; max-width: 500px; text-align: center; transition: background 0.3s ease; }
         .error-content button { margin-top: 20px; padding: 5px 15px; cursor: pointer; }
 
         /* Main Game Wrapper - Strict Proportions for any monitor */
@@ -41,7 +41,8 @@
             width: 100%; height: 100%; 
             display: grid;
             grid-template-columns: 280px 1fr 200px; 
-            grid-template-rows: minmax(180px, 1fr) minmax(220px, 1fr) minmax(220px, 1fr) minmax(180px, 1fr); 
+            /* Request 1: Play zones take up max vertical space, hand zone compact (~320px) */
+            grid-template-rows: 1fr 1fr minmax(310px, 320px); 
             gap: 8px; padding: 8px; 
         }
         
@@ -51,52 +52,47 @@
         .zone-count { position: absolute; bottom: 5px; right: 10px; font-weight: bold; color: #fff; pointer-events: none; z-index: 100; background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; text-shadow: 1px 1px 2px #000; }
         
         /* Territory Layout */
-        #ui-overlay { grid-column: 1 / 2; grid-row: 1 / 5; background: rgba(0,0,0,0.7); padding: 12px; border-radius: 8px; border: 1px solid #444; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; height: 100%; }
+        #ui-overlay { grid-column: 1 / 2; grid-row: 1 / 4; background: rgba(0,0,0,0.7); padding: 12px; border-radius: 8px; border: 1px solid #444; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; height: 100%; }
         
-        /* Hand & Play Zones updated */
-        #opp-hand-zone { grid-column: 2 / 3; grid-row: 1 / 2; justify-content: center; padding: 35px 10px 10px 10px; overflow: hidden; gap: 6px; border-color: #6a3030; background: rgba(100, 30, 30, 0.1); flex-wrap: nowrap; }
-        /* Play zones switched to block display for free-form drag/drop coordinates */
-        #opp-play-zone { grid-column: 2 / 3; grid-row: 2 / 3; display: block; overflow: hidden; border-color: #6a3030; background: rgba(100, 30, 30, 0.1); }
-        #my-play-zone { grid-column: 2 / 3; grid-row: 3 / 4; display: block; overflow: hidden; border-color: #3b7b4b; background: rgba(30, 100, 50, 0.1); }
+        #opp-play-zone { grid-column: 2 / 3; grid-row: 1 / 2; display: block; overflow: hidden; border-color: #6a3030; background: rgba(100, 30, 30, 0.1); }
+        #my-play-zone { grid-column: 2 / 3; grid-row: 2 / 3; display: block; overflow: hidden; border-color: #3b7b4b; background: rgba(30, 100, 50, 0.1); }
         
-        #opp-right-panel { grid-column: 3 / 4; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
+        #opp-right-panel { grid-column: 3 / 4; grid-row: 1 / 2; display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
         
-        #my-hand-zone { grid-column: 2 / 3; grid-row: 4 / 5; justify-content: center; padding: 10px 10px 35px 10px; overflow: hidden; gap: 6px; border-color: #3b7b4b; background: rgba(30, 100, 50, 0.1); flex-wrap: nowrap; }
-        #my-right-panel { grid-column: 3 / 4; grid-row: 3 / 5; display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
+        #my-hand-zone { grid-column: 2 / 3; grid-row: 3 / 4; justify-content: center; padding: 10px; overflow-x: auto; overflow-y: hidden; gap: 6px; border-color: #3b7b4b; background: rgba(30, 100, 50, 0.1); flex-wrap: nowrap; height: 100%; }
+        #my-right-panel { grid-column: 3 / 4; grid-row: 2 / 4; display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
 
         /* Side Panel Zones */
         .side-zone { flex: 1; border: 2px dashed #555; border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); min-height: 0; overflow: hidden; cursor: pointer; }
         .side-deck { border: 2px solid #666; background: rgba(0,0,0,0.5); box-shadow: inset 0 0 15px #000; cursor: pointer; }
         .side-zone .card { width: 130px; height: 182px; max-width: 90%; max-height: 90%; font-size: 0.8rem; padding: 4px; }
 
-        /* Cards Default Size & Dynamic Shrink Class */
+        /* Cards Default Size */
         .card { 
             width: 200px; height: 280px; 
             min-width: 50px; min-height: 70px;
             background-color: #eee; border: 2px solid #222; border-radius: 12px; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.5); color: black; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; padding: 10px; word-wrap: break-word; z-index: 10; flex-shrink: 1; background-size: cover; background-position: center; 
         }
         .card.facedown { background: repeating-linear-gradient(45deg, #2b4162, #2b4162 10px, #1a283d 10px, #1a283d 20px) !important; border: 2px solid #fff; color: transparent; }
-        .card:hover { box-shadow: 0 0 20px gold; z-index: 50; transform: scale(1.05); }
         
+        .card:hover { box-shadow: 0 0 20px gold; z-index: 50; transform: scale(1.05); }
+        .card.dragging-active { box-shadow: none !important; opacity: 1 !important; z-index: 9999 !important; }
+
         /* Rotated cards */
         .card.rotated { transform: rotate(90deg); }
         .card.rotated:hover { transform: rotate(90deg) scale(1.05); }
         
-        /* Hand Cards Hover Interaction */
         #my-hand-zone .card:hover { transform: translateY(-10px) scale(1.08); z-index: 100; }
-        #opp-hand-zone .card:hover { transform: translateY(10px) scale(1.08); z-index: 100; }
         
-        /* Normal human-reading orientation for both players */
-        #opp-hand-zone .card, #opp-play-zone .card { transform: none; }
+        #opp-play-zone .card { transform: none; }
         #opp-play-zone .card.rotated { transform: rotate(90deg); }
         #opp-play-zone .card.rotated:hover { transform: rotate(90deg) scale(1.05); }
 
-        /* Counter System Styling */
+        /* Counter System Styling (Request 3: visible on face-down cards) */
         .counters-container { position: absolute; bottom: 8px; left: 8px; display: flex; gap: 5px; z-index: 25; flex-wrap: wrap; }
         .counter-blip { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.8); }
-        .counter-blip.p1p1 { background: #28a745; color: white; }
-        .counter-blip.m1m1 { background: #dc3545; color: white; }
-        .counter-blip.generic { background: #007bff; color: white; }
+        .counter-blip.green { background: #28a745; color: white; }
+        .counter-blip.red { background: #dc3545; color: white; }
 
         /* Multi-selection Visuals */
         #selection-box { position: absolute; border: 2px dashed rgba(77, 171, 247, 0.8); background: rgba(77, 171, 247, 0.2); pointer-events: none; z-index: 9999; display: none; }
@@ -109,14 +105,30 @@
         .life-btn { background: #555; color: white; border: none; padding: 2px 10px; cursor: pointer; font-size: 1.2rem; border-radius: 4px; }
         .life-btn:hover { background: #777; }
         
-        .dice-roller { display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1px solid #444; padding-bottom: 10px; justify-content: center;}
+        /* Request 6: Realistic Dice & Coin Graphics */
+        .dice-roller { display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #444; padding-bottom: 10px; justify-content: center; align-items: center; }
         .dice-roller button { 
-            background: #fff; color: #111; border: 2px solid #333; cursor: pointer; border-radius: 6px; font-weight: bold; 
-            width: 38px; height: 38px; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2), 2px 2px 4px rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef); color: #212529; border: 2px solid #ced4da; cursor: pointer; font-weight: bold; 
+            display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.8);
+            transition: all 0.2s ease;
         }
-        .dice-roller button:hover { background: #e0e0e0; border-color: #000; transform: translateY(-2px); }
-        .dice-roller button.coin { width: 100%; border-radius: 16px; height: 32px; box-shadow: none; }
+        .dice-roller button:hover { background: linear-gradient(135deg, #ffffff, #dee2e6); border-color: #6c757d; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.4); }
+        
+        /* D4: Triangle */
+        .dice-roller button:nth-child(1) { width: 40px; height: 38px; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background: linear-gradient(180deg, #fffae6, #ffe066); border: none; padding-top: 10px; }
+        /* D6: Rounded Die Square */
+        .dice-roller button:nth-child(2) { width: 38px; height: 38px; border-radius: 8px; background: linear-gradient(145deg, #ffffff, #f1f3f5); border: 2px solid #adb5bd; }
+        /* D10: Shield / Diamond */
+        .dice-roller button:nth-child(3) { width: 38px; height: 40px; clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 20% 100%, 0% 35%); background: linear-gradient(145deg, #e7f5ff, #74c0fc); border: none; }
+        /* D12: Pentagon */
+        .dice-roller button:nth-child(4) { width: 40px; height: 38px; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); background: linear-gradient(145deg, #f3f0ff, #b197fc); border: none; }
+        /* D20: Hexagon */
+        .dice-roller button:nth-child(5) { width: 40px; height: 40px; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); background: linear-gradient(145deg, #fff5f5, #ff8787); border: none; }
+        /* D100: Round Golden Badge */
+        .dice-roller button:nth-child(6) { width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, #fff3bf 0%, #fab005 100%); border: 2px solid #e67700; color: #5c3c00; }
+        /* Coin: Shiny Metallic Coin */
+        .dice-roller button.coin { width: 100%; border-radius: 20px; height: 34px; background: radial-gradient(circle, #ffe066 0%, #f59f00 70%, #d9480f 100%); border: 2px dashed #ffe066; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); font-weight: bold; font-size: 0.9rem; box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
         
         #log { font-size: 0.8rem; color: #ccc; flex: 1; min-height: 100px; overflow-y: auto; border: 1px inset #444; padding: 5px; background: #111; border-radius: 4px; }
         #log div { margin-bottom: 4px; border-bottom: 1px solid #222; padding-bottom: 2px; }
@@ -130,17 +142,14 @@
 
         /* Create Card Modal */
         #create-card-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 2900; align-items: center; justify-content: center; }
-        .modal-box { background: #222; border: 1px solid #555; border-radius: 8px; width: 450px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
-        .modal-box textarea { width: 100%; height: 120px; margin-bottom: 15px; background: #111; color: #fff; padding: 10px; font-family: monospace; border: 1px solid #444; border-radius: 4px; }
+        .modal-box { background: #222; border: 1px solid #555; border-radius: 8px; width: 500px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.9); max-height: 85vh; overflow-y: auto; }
+        .modal-box textarea { width: 100%; height: 80px; margin-bottom: 10px; background: #111; color: #fff; padding: 10px; font-family: monospace; border: 1px solid #444; border-radius: 4px; }
 
         /* Context Menus */
         #context-menu { display: none; position: absolute; background: #2b2b2b; border: 1px solid #555; border-radius: 4px; box-shadow: 2px 2px 15px rgba(0,0,0,0.8); z-index: 3000; min-width: 180px; }
         #context-menu ul { list-style: none; }
         #context-menu li { padding: 10px 15px; cursor: pointer; font-size: 0.95rem; border-bottom: 1px solid #333; color: #eee; position: relative; }
         #context-menu li:hover { background: #3b5bdb; }
-        #context-menu li.submenu { position: relative; }
-        #context-menu .submenu-content { display: none; position: absolute; left: 100%; top: 0; background: #2b2b2b; border: 1px solid #555; min-width: 180px; box-shadow: 2px 2px 15px rgba(0,0,0,0.8); max-height: 350px; overflow-y: auto; z-index: 3001; }
-        #context-menu li.submenu:hover > .submenu-content { display: block; }
     </style>
 </head>
 <body>
@@ -150,8 +159,8 @@
         <div class="login-box">
             <h2 style="margin-bottom: 5px;">Multiplayer Card Engine</h2>
             <p style="margin-bottom: 20px; color: #aaa; font-size: 0.9rem;">Powered by PeerJS (P2P)</p>
-            <input type="text" id="player-name" placeholder="Enter Your Display Name" autocomplete="off">
-            <input type="text" id="game-code" placeholder="Enter 6+ character Game Code" autocomplete="off">
+            <input type="text" id="player-name" placeholder="Enter Your Display Name" autocomplete="off" maxlength="10">
+            <input type="text" id="game-code" placeholder="Enter 6+ character Game Code" autocomplete="off" maxlength="64">
             <div id="error-msg">Code must be 6 characters minimum.</div>
             <button id="btn-host" disabled>Host Game</button>
             <button id="btn-join" disabled>Join Game</button>
@@ -162,7 +171,7 @@
     <!-- General Error Modal -->
     <div id="error-modal">
         <div class="error-content">
-            <h3 style="color: #ffaaaa; margin-bottom: 10px;">Connection / Game Error</h3>
+            <h3 style="color: #fff; margin-bottom: 10px;">Connection Status</h3>
             <p id="error-details">Something went wrong.</p>
             <button onclick="document.getElementById('error-modal').style.display='none'">Acknowledge</button>
         </div>
@@ -173,7 +182,14 @@
         <div style="background: #222; border: 1px solid #555; border-radius: 8px; width: 90vw; height: 90vh; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.9);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px;">
                 <h3 id="search-deck-title">Search Zone (<span id="search-deck-count">0</span> cards)</h3>
-                <button onclick="closeSearchDeckModal()" style="background: #555; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold;">Close Window</button>
+                
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <label id="shuffle-checkbox-container" style="color: #ccc; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" id="shuffle-after-search" checked>
+                        Shuffle Deck After Searching
+                    </label>
+                    <button onclick="closeSearchDeckModal()" style="background: #555; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold;">Close Window</button>
+                </div>
             </div>
             <div id="search-deck-grid" style="flex: 1; display: flex; flex-wrap: wrap; gap: 20px; overflow-y: auto; align-content: flex-start; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
                 <!-- Dynamically populated cards -->
@@ -185,12 +201,28 @@
     <div id="create-card-modal">
         <div class="modal-box">
             <h3 style="margin-bottom: 15px;">Create Card(s)</h3>
-            <label style="font-size: 0.9rem; color: #ccc; display: block; margin-bottom: 8px;">Enter card details (e.g. '4 Lightning Bolt' or '1 Opt (XLN) 65'):</label>
-            <textarea id="create-card-input" placeholder="4 Lightning Bolt&#10;1 Opt (XLN) 65"></textarea>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="submitCreateCard()" style="flex: 1; background: #007bff; font-weight: bold; padding: 10px; border:none; border-radius:4px; cursor:pointer;">Create & Add</button>
-                <button onclick="document.getElementById('create-card-modal').style.display='none'" style="flex: 1; background: #444; padding: 10px; border:none; border-radius:4px; cursor:pointer;">Cancel</button>
+            
+            <div class="import-section" style="margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 15px;">
+                <label style="font-size: 0.9rem; color: #ccc; display: block; margin-bottom: 8px;">Enter card details (e.g. '4 Lightning Bolt' or '1 Opt (XLN) 65'):</label>
+                <textarea id="create-card-input" placeholder="4 Lightning Bolt&#10;1 Opt (XLN) 65"></textarea>
+                <button onclick="submitCreateCardText()" style="width: 100%; background: #007bff; font-weight: bold; padding: 8px; border:none; border-radius:4px; cursor:pointer;">Create Text Card(s)</button>
             </div>
+
+            <div class="import-section" style="border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <label style="font-size: 0.85rem; color: #ccc;">Create via Pasted Images:</label>
+                    <button type="button" onclick="addCreateImageRow()" style="background: #3b5bdb; color: white; border: none; width: 26px; height: 26px; font-weight: bold; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Add another image card slot">+</button>
+                </div>
+                <div id="create-image-imports-container">
+                    <div class="create-image-import-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;" data-image-url="">
+                        <div class="paste-box" contenteditable="true" style="flex: 1; background: #111; border: 1px dashed #666; padding: 6px; font-size: 0.85rem; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 30px; display: flex; align-items: center; justify-content: center;" onpaste="handleImagePaste(event, this)" tabindex="0">Click & Press Ctrl+V to Paste Image</div>
+                        <input type="number" class="create-image-card-qty" value="1" min="1" max="99" style="width: 50px; padding: 3px; background: #111; color: #fff; border: 1px solid #444; text-align: center;" title="Quantity">
+                    </div>
+                </div>
+                <button onclick="submitCreateCardImages()" style="width: 100%; background: #17a2b8; margin-top: 5px; padding: 8px; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Create Pasted Image Card(s)</button>
+            </div>
+
+            <button onclick="document.getElementById('create-card-modal').style.display='none'" style="width: 100%; background: #444; padding: 8px; border:none; border-radius:4px; cursor:pointer;">Cancel / Close</button>
         </div>
     </div>
 
@@ -215,6 +247,10 @@
                             <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: oppRole, amount: 1})">+</button>
                         </div>
                     </div>
+                    <div class="life-row" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #444;">
+                        <span style="color: #ccc;">Opponent's Cards In Hand:</span>
+                        <span id="ui-opp-hand-count" style="font-weight: bold; color: white; background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 4px;">0</span>
+                    </div>
                 </div>
                 <div class="dice-roller">
                     <button onclick="rollDice(4)">D4</button>
@@ -225,8 +261,9 @@
                     <button onclick="rollDice(100)">D100</button>
                     <button class="coin" onclick="rollCoin()">Flip a Coin</button>
                 </div>
-                <div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
                     <button onclick="document.getElementById('import-overlay').style.display='block'" style="padding: 10px; width: 100%; cursor: pointer; background: #28a745; color: white; border:none; font-weight:bold; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.4);">Import Deck (Scryfall)</button>
+                    <button onclick="requestNewGame()" style="padding: 10px; width: 100%; cursor: pointer; background: #ffc107; color: #111; border:none; font-weight:bold; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.4);">New Game (Reset Board)</button>
                 </div>
                 <div id="log"></div>
             </div>
@@ -262,10 +299,6 @@
             </div>
 
             <!-- OPPONENT TERRITORY (TOP) -->
-            <div id="opp-hand-zone" class="zone">
-                <div class="zone-title" style="top: auto; bottom: 5px;" id="lbl-opp-hand">Opponent Hand</div>
-                <div class="zone-count" id="opp-hand-count">0</div>
-            </div>
             <div id="opp-play-zone" class="zone">
                 <div class="zone-title" style="top: auto; bottom: 5px;" id="lbl-opp-play">Opponent Play</div>
                 <div class="zone-count" id="opp-play-count">0</div>
@@ -331,6 +364,9 @@
             cardIdCounter: 0
         };
 
+        /** SAVED BOARD STATE **/
+        let myInitialDeck = null;
+
         /** MULTI-SELECTION, DRAG, & SCALING STATE **/
         let draggedCardIds = [];
         let isSelecting = false;
@@ -341,7 +377,7 @@
         const selectedCardIds = new Set();
         let currentSearchZoneKey = null;
         
-        let currentScale = 1; // Dynamic aspect ratio scale factor
+        let currentScale = 1; 
         let dragOffsetX = 0;
         let dragOffsetY = 0;
 
@@ -349,8 +385,10 @@
         const PREFIX = 'html-card-engine-v2-';
         let peer = null;
         let connection = null; 
-        let myRole = null;     // 'host' or 'guest'
-        let oppRole = null;    // 'guest' or 'host'
+        let myRole = null;     
+        let oppRole = null;    
+        let reconnectInterval = null;
+        let stateSyncTimeout = null;
 
         /** UI ELEMENTS **/
         const nameInput = document.getElementById('player-name');
@@ -368,20 +406,26 @@
             const winW = window.innerWidth;
             const winH = window.innerHeight;
             
-            // Base resolution logic corresponding exactly to a 3840x2160 screen scaled by Windows to 150%
             const scaleW = winW / 2560;
             const scaleH = winH / 1440;
             currentScale = Math.min(scaleW, scaleH);
             
             gameWrapper.style.transform = `scale(${currentScale})`;
             
-            // Keep the canvas perfectly centered in the window viewport
             const scaledW = 2560 * currentScale;
             const scaledH = 1440 * currentScale;
             gameWrapper.style.left = `${(winW - scaledW) / 2}px`;
             gameWrapper.style.top = `${(winH - scaledH) / 2}px`;
         }
         window.addEventListener('resize', resizeUI);
+
+        /** REQUEST 2: TAB VISIBILITY & LAG FIX **/
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                resizeUI();
+                renderAll();
+            }
+        });
 
         /** LOGIN LOGIC **/
         codeInput.addEventListener('input', (e) => {
@@ -399,11 +443,54 @@
 
         function showError(msg) {
             document.getElementById('error-details').innerText = msg;
+            document.querySelector('.error-content').style.background = '#8b0000';
             document.getElementById('error-modal').style.display = 'flex';
             loadingMsg.style.display = 'none';
         }
 
-        /** PEERJS NETWORKING **/
+        /** PEERJS NETWORKING & RECONNECT SYSTEM **/
+        function handleDisconnect() {
+            if (reconnectInterval) return; 
+            
+            const errorDetails = document.getElementById('error-details');
+            const errorModal = document.getElementById('error-modal');
+            const errorContent = document.querySelector('.error-content');
+            
+            errorDetails.innerText = "Connection lost. Attempting to gracefully reconnect...";
+            errorContent.style.background = '#8b6b00'; 
+            errorModal.style.display = 'flex';
+            
+            reconnectInterval = setInterval(() => {
+                if (myRole === 'guest') {
+                    let newConn = peer.connect(PREFIX + codeInput.value.trim().toLowerCase(), { reliable: true });
+                    newConn.on('open', () => {
+                        clearInterval(reconnectInterval);
+                        reconnectInterval = null;
+                        connection = newConn;
+                        setupConnection(newConn);
+                        requestAction('SET_NAME', { name: state.names.guest });
+                        showReconnectSuccess();
+                    });
+                    newConn.on('error', () => { /* Loop and try again */ });
+                } else if (myRole === 'host') {
+                    if (peer.disconnected) {
+                        peer.reconnect();
+                    }
+                }
+            }, 3000);
+        }
+
+        function showReconnectSuccess() {
+            const errorDetails = document.getElementById('error-details');
+            const errorContent = document.querySelector('.error-content');
+            errorDetails.innerText = "Successfully Reconnected!";
+            errorContent.style.background = '#28a745'; 
+            setTimeout(() => {
+                document.getElementById('error-modal').style.display = 'none';
+                errorContent.style.background = '#8b0000'; 
+            }, 2000);
+        }
+
         btnHost.addEventListener('click', () => {
             const code = codeInput.value.trim().toLowerCase();
             const myName = nameInput.value.trim() || 'Host';
@@ -421,18 +508,27 @@
             });
 
             peer.on('connection', (conn) => {
-                if (connection) {
+                if (connection && connection.open) {
                     conn.send({ type: 'ERROR', msg: 'Game is full.' });
                     conn.close();
                     return;
                 }
                 connection = conn;
                 setupConnection(conn);
-                logToUI("Opponent joined the game!");
+                logToUI("Opponent joined / reconnected!");
+                
+                if (reconnectInterval) {
+                    clearInterval(reconnectInterval);
+                    reconnectInterval = null;
+                    showReconnectSuccess();
+                } else {
+                    document.getElementById('error-modal').style.display = 'none';
+                }
                 broadcastState(); 
             });
 
             peer.on('error', (err) => showError("Host Error: " + err.message));
+            peer.on('disconnected', () => peer.reconnect());
         });
 
         btnJoin.addEventListener('click', () => {
@@ -453,10 +549,11 @@
                     requestAction('SET_NAME', { name: myName });
                     logToUI("Successfully joined the host!");
                 });
-                connection.on('error', (err) => showError("Connection Error: " + err.message));
+                connection.on('error', (err) => handleDisconnect());
             });
 
             peer.on('error', (err) => showError("Peer Error: " + err.message));
+            peer.on('disconnected', () => peer.reconnect());
         });
 
         function setupConnection(conn) {
@@ -473,13 +570,14 @@
                     logToUI(data.msg);
                 }
             });
-            conn.on('close', () => showError("Connection to opponent lost."));
+            conn.on('close', () => handleDisconnect());
+            conn.on('error', () => handleDisconnect());
         }
 
         function startGameUI() {
             loginScreen.style.display = 'none';
             gameWrapper.style.display = 'block';
-            resizeUI(); // Force instant scale calculation before rendering
+            resizeUI(); 
             renderAll();
         }
 
@@ -491,10 +589,17 @@
         }
 
         function broadcastState() {
-            if (myRole === 'host' && connection && connection.open) connection.send({ type: 'STATE_SYNC', state: state });
             renderAll(); 
             if (document.getElementById('search-deck-modal').style.display === 'flex' && currentSearchZoneKey) {
                 refreshSearchModalContent();
+            }
+            if (myRole === 'host' && connection && connection.open) {
+                if (!stateSyncTimeout) {
+                    stateSyncTimeout = setTimeout(() => {
+                        connection.send({ type: 'STATE_SYNC', state: state });
+                        stateSyncTimeout = null;
+                    }, 50);
+                }
             }
         }
 
@@ -503,7 +608,6 @@
             logToUI(msg);
         }
 
-        /** ZONE NAME FORMATTING HELPER FOR LOGS **/
         function getZoneDisplayName(zoneKey) {
             if (!zoneKey) return '';
             const [zoneType, ownerRole] = zoneKey.split('_');
@@ -534,11 +638,33 @@
                 case 'IMPORT_CARDS':
                     payload.cards.forEach(c => {
                         c.id = 'card_' + state.cardIdCounter++;
-                        c.counters = { generic: 0, p1p1: 0, m1m1: 0 };
+                        c.counters = { green: 0, red: 0 };
                         state.zones[payload.zone].push(c);
                     });
                     if(payload.zone.startsWith('deck')) shuffleInternal(payload.zone);
                     broadcastLog(`${playerName} generated ${payload.cards.length} card(s) into ${getZoneDisplayName(payload.zone)}.`);
+                    break;
+                case 'RESET_GAME':
+                    Object.keys(state.zones).forEach(zName => {
+                        if (zName.endsWith('_' + player)) {
+                            state.zones[zName] = [];
+                        }
+                    });
+                    let newId = state.cardIdCounter;
+                    let clonedDeck = JSON.parse(JSON.stringify(payload.deck));
+                    clonedDeck.forEach(c => {
+                        c.id = 'card_' + newId++;
+                        c.counters = { green: 0, red: 0 };
+                        c.facedown = true;
+                        c.rotated = false;
+                        delete c.x;
+                        delete c.y;
+                        state.zones[`deck_${player}`].push(c);
+                    });
+                    state.cardIdCounter = newId;
+                    state.life[player] = 20;
+                    shuffleInternal(`deck_${player}`);
+                    broadcastLog(`${state.names[player]} started a New Game and reset their board state.`);
                     break;
                 case 'SHUFFLE_DECK':
                     shuffleInternal(`deck_${player}`);
@@ -547,13 +673,10 @@
                 case 'MOVE_CARDS':
                     let baseStartX = payload.x;
                     let baseStartY = payload.y;
-                    
-                    // Provides safe cascading drop spots if pushed to play area via context menu without coordinates
                     if (payload.toZone.startsWith('play') && baseStartX === undefined) {
                          baseStartX = 100;
                          baseStartY = 50;
                     }
-
                     payload.cardIds.forEach((id, idx) => {
                         const foundInfo = findCardGlobal(id);
                         if (foundInfo) {
@@ -562,7 +685,6 @@
                             const fromZoneStr = getZoneDisplayName(foundInfo.zone);
                             const toZoneStr = getZoneDisplayName(payload.toZone);
                             
-                            // Offset multi-selected cards intelligently so they don't exactly obscure each other
                             let targetX = baseStartX !== undefined ? baseStartX + (idx * 30) : undefined;
                             let targetY = baseStartY !== undefined ? baseStartY + (idx * 30) : undefined;
                             
@@ -584,9 +706,7 @@
                     }
                     idsToShuffle.forEach(id => {
                         const foundInfo = findCardGlobal(id);
-                        if (foundInfo) {
-                            executeMoveCard(id, payload.toZone, 'bottom');
-                        }
+                        if (foundInfo) executeMoveCard(id, payload.toZone, 'bottom');
                     });
                     broadcastLog(`${playerName} moved ${payload.cardIds.length} card(s) to the bottom of their deck in random order.`);
                     break;
@@ -621,22 +741,25 @@
                     payload.cardIds.forEach(id => {
                         const info = findCardGlobal(id);
                         if(info) {
-                            if (!info.card.counters) info.card.counters = { generic: 0, p1p1: 0, m1m1: 0 };
-                            if (payload.action === 'CLEAR') {
-                                info.card.counters = { generic: 0, p1p1: 0, m1m1: 0 };
-                            } else {
-                                info.card.counters[payload.cType] += payload.amount;
-                                if(info.card.counters[payload.cType] < 0) info.card.counters[payload.cType] = 0;
-                            }
+                            if (!info.card.counters) info.card.counters = { green: 0, red: 0 };
+                            info.card.counters[payload.cType] += payload.amount;
+                            if(info.card.counters[payload.cType] < 0) info.card.counters[payload.cType] = 0;
+                        }
+                    });
+                    break;
+                case 'CLEAR_COUNTER_TYPE':
+                    payload.cardIds.forEach(id => {
+                        const info = findCardGlobal(id);
+                        if(info) {
+                            if (!info.card.counters) info.card.counters = { green: 0, red: 0 };
+                            info.card.counters[payload.cType] = 0;
                         }
                     });
                     break;
                 case 'DELETE_CARDS':
                     payload.cardIds.forEach(id => {
                         const info = findCardGlobal(id);
-                        if(info) {
-                            state.zones[info.zone].splice(info.index, 1);
-                        }
+                        if(info) state.zones[info.zone].splice(info.index, 1);
                     });
                     broadcastLog(`${playerName} deleted ${payload.cardIds.length} card(s) from the game.`);
                     break;
@@ -660,19 +783,16 @@
             return null;
         }
 
-        // Handles extracting and injecting cards for moves
         function executeMoveCard(cardId, toZone, index, x, y) {
             const foundInfo = findCardGlobal(cardId);
             if (!foundInfo) return;
             
             const foundCard = state.zones[foundInfo.zone].splice(foundInfo.index, 1)[0];
 
-            // Core Rules
-            if (toZone.startsWith('deck')) foundCard.facedown = true; // Auto-facedown rule applies on entry to deck
+            if (toZone.startsWith('deck')) foundCard.facedown = true; 
             if (toZone.startsWith('hand')) foundCard.facedown = false;
             if (!toZone.startsWith('play')) foundCard.rotated = false;
             
-            // X and Y Coordinate Rules assignment for free-form zones
             if (toZone.startsWith('play')) {
                  if (x !== undefined && y !== undefined) {
                      foundCard.x = x;
@@ -706,7 +826,7 @@
             requestAction('ROLL_DICE', { sides: 'Coin', result });
         }
 
-        /** DECK PARSING & FETCHING **/
+        /** DECK PARSING & FETCHING (Request 4: Scryfall API mapping fix by name) **/
         async function parseAndFetchList(textRaw) {
             const lines = textRaw.split('\n').map(l => l.trim()).filter(l => l);
             const cardRequests = [];
@@ -749,15 +869,16 @@
                     });
                     const data = await res.json();
                     if (data.data) {
-                        data.data.forEach((scryCard, idx) => {
-                            const key = chunk[idx].name || (chunk[idx].set + chunk[idx].collector_number);
+                        data.data.forEach((scryCard) => {
                             let img = '';
                             if (scryCard.image_uris && scryCard.image_uris.normal) {
                                 img = scryCard.image_uris.normal;
                             } else if (scryCard.card_faces && scryCard.card_faces[0].image_uris) {
                                 img = scryCard.card_faces[0].image_uris.normal;
                             }
-                            resolvedCards[key] = img;
+                            if (scryCard.name) {
+                                resolvedCards[scryCard.name.toLowerCase()] = img;
+                            }
                         });
                     }
                 } catch (e) {
@@ -767,8 +888,8 @@
 
             let newCards = [];
             cardRequests.forEach(req => {
-                const key = req.idObj.name || (req.idObj.set + req.idObj.collector_number);
-                const img = resolvedCards[key] || '';
+                const lookupKey = (req.idObj.name || req.originalName).toLowerCase();
+                const img = resolvedCards[lookupKey] || '';
                 for(let i=0; i<req.qty; i++) {
                     newCards.push({ name: req.originalName, imageUrl: img, facedown: true, rotated: false, owner: myRole });
                 }
@@ -776,6 +897,7 @@
             return newCards;
         }
 
+        /** REQUEST 5: IMPORT DECK AUTOMATICALLY CLEARS & RESETS BOARD **/
         async function importTextDeck() {
             const btn = document.querySelector('#import-overlay button');
             const origText = btn.innerText;
@@ -786,19 +908,38 @@
             const newCards = await parseAndFetchList(text);
             
             document.getElementById('import-overlay').style.display = 'none';
-            if(newCards.length > 0) requestAction('IMPORT_CARDS', { cards: newCards, zone: `deck_${myRole}` });
+            if(newCards.length > 0) {
+                myInitialDeck = JSON.parse(JSON.stringify(newCards));
+                requestAction('RESET_GAME', { deck: myInitialDeck });
+            }
             
             btn.innerText = origText;
             btn.disabled = false;
         }
 
+        function requestNewGame() {
+            if (!myInitialDeck) {
+                alert("Please import a deck first before resetting back to one.");
+                return;
+            }
+            if (confirm("Clear your side of the board and reset your game to the last imported deck?")) {
+                requestAction('RESET_GAME', { deck: myInitialDeck });
+            }
+        }
+
         function openCreateCardModal(globalZone) {
             activeCreateZone = globalZone;
             document.getElementById('create-card-input').value = '';
+            document.getElementById('create-image-imports-container').innerHTML = `
+                <div class="create-image-import-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;" data-image-url="">
+                    <div class="paste-box" contenteditable="true" style="flex: 1; background: #111; border: 1px dashed #666; padding: 6px; font-size: 0.85rem; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 30px; display: flex; align-items: center; justify-content: center;" onpaste="handleImagePaste(event, this)" tabindex="0">Click & Press Ctrl+V to Paste Image</div>
+                    <input type="number" class="create-image-card-qty" value="1" min="1" max="99" style="width: 50px; padding: 3px; background: #111; color: #fff; border: 1px solid #444; text-align: center;" title="Quantity">
+                </div>
+            `;
             document.getElementById('create-card-modal').style.display = 'flex';
         }
 
-        async function submitCreateCard() {
+        async function submitCreateCardText() {
             const input = document.getElementById('create-card-input').value;
             if (!input || !input.trim()) return;
             
@@ -811,6 +952,47 @@
             }
         }
 
+        function addCreateImageRow() {
+            const container = document.getElementById('create-image-imports-container');
+            const row = document.createElement('div');
+            row.className = 'create-image-import-row';
+            row.style.cssText = 'display: flex; gap: 8px; align-items: center; margin-bottom: 8px;';
+            row.dataset.imageUrl = '';
+            row.innerHTML = `
+                <div class="paste-box" contenteditable="true" style="flex: 1; background: #111; border: 1px dashed #666; padding: 6px; font-size: 0.85rem; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 30px; display: flex; align-items: center; justify-content: center;" onpaste="handleImagePaste(event, this)" tabindex="0">Click & Press Ctrl+V to Paste Image</div>
+                <input type="number" class="create-image-card-qty" value="1" min="1" max="99" style="width: 50px; padding: 3px; background: #111; color: #fff; border: 1px solid #444; text-align: center;" title="Quantity">
+                <button type="button" onclick="this.parentElement.remove()" style="background: #8b0000; color: white; border: none; padding: 4px 8px; cursor: pointer; border-radius: 4px; font-weight: bold;">×</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function submitCreateCardImages() {
+            const rows = document.querySelectorAll('.create-image-import-row');
+            let newCards = [];
+
+            for (let row of rows) {
+                const dataUrl = row.dataset.imageUrl;
+                const qtyInput = row.querySelector('.create-image-card-qty');
+                const qty = parseInt(qtyInput.value) || 1;
+
+                if (dataUrl) {
+                    for (let i = 0; i < qty; i++) {
+                        newCards.push({ name: 'Pasted Image Card', imageUrl: dataUrl, facedown: false, rotated: false, owner: myRole });
+                    }
+                }
+            }
+
+            if (newCards.length === 0) {
+                alert('Please paste at least one valid image using Ctrl+V.');
+                return;
+            }
+
+            document.getElementById('create-card-modal').style.display = 'none';
+            if (newCards.length > 0 && activeCreateZone) {
+                requestAction('IMPORT_CARDS', { cards: newCards, zone: activeCreateZone });
+            }
+        }
+
         function importPokerDeck() {
             const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
             const values = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
@@ -819,7 +1001,10 @@
                 for (let v of values) newCards.push({ name: `${v} of ${s}`, imageUrl: '', facedown: true, rotated: false, owner: myRole });
             }
             document.getElementById('import-overlay').style.display = 'none';
-            requestAction('IMPORT_CARDS', { cards: newCards, zone: `deck_${myRole}` });
+            if(newCards.length > 0) {
+                myInitialDeck = JSON.parse(JSON.stringify(newCards));
+                requestAction('RESET_GAME', { deck: myInitialDeck });
+            }
         }
 
         function addImageImportRow() {
@@ -844,8 +1029,8 @@
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         const dataUrl = event.target.result;
-                        const row = boxEl.closest('.image-import-row');
-                        row.dataset.imageUrl = dataUrl;
+                        const row = boxEl.closest('.image-import-row') || boxEl.closest('.create-image-import-row');
+                        if (row) row.dataset.imageUrl = dataUrl;
                         boxEl.style.backgroundImage = `url('${dataUrl}')`;
                         boxEl.style.backgroundSize = 'contain';
                         boxEl.style.backgroundRepeat = 'no-repeat';
@@ -882,7 +1067,10 @@
             }
 
             document.getElementById('import-overlay').style.display = 'none';
-            requestAction('IMPORT_CARDS', { cards: newCards, zone: `deck_${myRole}` });
+            if(newCards.length > 0) {
+                myInitialDeck = JSON.parse(JSON.stringify(newCards));
+                requestAction('RESET_GAME', { deck: myInitialDeck });
+            }
             
             document.getElementById('image-imports-container').innerHTML = `
                 <div class="image-import-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;" data-image-url="">
@@ -892,7 +1080,7 @@
             `;
         }
 
-        /** SEARCH / VIEW ZONE MODAL FUNCTIONS (Deck, Grave, Exile) **/
+        /** SEARCH / VIEW ZONE MODAL FUNCTIONS **/
         function openSearchDeckModal() {
             currentSearchZoneKey = `deck_${myRole}`;
             refreshSearchModalContent();
@@ -909,8 +1097,10 @@
             
             const [zType, zOwner] = currentSearchZoneKey.split('_');
             const ownerName = state.names[zOwner] || zOwner;
+            const isMyDeck = currentSearchZoneKey === `deck_${myRole}`;
             
             document.getElementById('search-deck-title').innerHTML = `Search ${ownerName}'s ${zType.charAt(0).toUpperCase() + zType.slice(1)} (<span id="search-deck-count">${cardsArr.length}</span> cards)`;
+            document.getElementById('shuffle-checkbox-container').style.display = isMyDeck ? 'flex' : 'none';
 
             const grid = document.getElementById('search-deck-grid');
             grid.innerHTML = '';
@@ -956,6 +1146,9 @@
         }
 
         function closeSearchDeckModal() { 
+            if (currentSearchZoneKey === `deck_${myRole}` && document.getElementById('shuffle-after-search').checked) {
+                requestAction('SHUFFLE_DECK', {});
+            }
             document.getElementById('search-deck-modal').style.display = 'none'; 
             currentSearchZoneKey = null;
         }
@@ -978,7 +1171,6 @@
             document.getElementById('lbl-my-grave').innerText = `${myName} Grave`;
             document.getElementById('lbl-my-exile').innerText = `${myName} Exile`;
 
-            document.getElementById('lbl-opp-hand').innerText = `${oppName} Hand`;
             document.getElementById('lbl-opp-play').innerText = `${oppName} Play`;
             document.getElementById('lbl-opp-deck').innerText = `${oppName} Deck`;
             document.getElementById('lbl-opp-grave').innerText = `${oppName} Grave`;
@@ -990,6 +1182,7 @@
 
             document.getElementById('my-life-total').innerText = state.life[myRole];
             document.getElementById('opp-life-total').innerText = state.life[oppRole];
+            document.getElementById('ui-opp-hand-count').innerText = state.zones[`hand_${oppRole}`] ? state.zones[`hand_${oppRole}`].length : 0;
 
             renderZone(state.zones[`play_${myRole}`], 'my-play-zone', false);
             renderZone(state.zones[`hand_${myRole}`], 'my-hand-zone', false);
@@ -998,7 +1191,6 @@
             renderZone(state.zones[`exile_${myRole}`], 'my-exile-zone', false);
 
             renderZone(state.zones[`play_${oppRole}`], 'opp-play-zone', false);
-            renderZone(state.zones[`hand_${oppRole}`], 'opp-hand-zone', true); 
             renderZone(state.zones[`deck_${oppRole}`], 'opp-deck-zone', true);
             renderZone(state.zones[`graveyard_${oppRole}`], 'opp-graveyard-zone', false);
             renderZone(state.zones[`exile_${oppRole}`], 'opp-exile-zone', false);
@@ -1047,7 +1239,6 @@
             
             if (containerId.startsWith('my-')) div.draggable = true;
 
-            // Absolute Positioning Application for the block Play zones
             if (containerId.includes('play-zone')) {
                 div.style.position = 'absolute';
                 div.style.left = (card.x !== undefined ? card.x : 100) + 'px';
@@ -1071,10 +1262,11 @@
 
             if (card.rotated) div.classList.add('rotated');
             
-            if (card.counters && !card.facedown) {
+            /* REQUEST 3: Counters visible even on face-down cards */
+            if (card.counters) {
                 let blips = '';
                 const cList = [
-                    {k: 'p1p1', lbl: '+1/+1', cls: 'p1p1'}, {k: 'm1m1', lbl: '-1/-1', cls: 'm1m1'}, {k: 'generic', lbl: 'Gen', cls: 'generic'}
+                    {k: 'green', lbl: 'Green', cls: 'green'}, {k: 'red', lbl: 'Red', cls: 'red'}
                 ];
                 cList.forEach(t => {
                     if(card.counters[t.k] > 0) {
@@ -1089,7 +1281,6 @@
                 }
             }
 
-            // Mouse down listener purely to record the grab offset relative to the card dimensions
             div.addEventListener('mousedown', (e) => {
                 const rect = div.getBoundingClientRect();
                 dragOffsetX = (e.clientX - rect.left) / currentScale;
@@ -1098,6 +1289,13 @@
 
             div.addEventListener('dragstart', (e) => {
                 if (containerId.startsWith('opp-')) { e.preventDefault(); return; }
+
+                if (containerId === 'my-play-zone') {
+                    div.classList.add('dragging-active');
+                    const img = new Image();
+                    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+                    e.dataTransfer.setDragImage(img, 0, 0);
+                }
                 
                 if(!selectedCardIds.has(card.id)) {
                     selectedCardIds.clear();
@@ -1106,6 +1304,21 @@
                 }
                 draggedCardIds = Array.from(selectedCardIds);
                 e.dataTransfer.setData('text/plain', 'dragging_cards');
+            });
+
+            div.addEventListener('drag', (e) => {
+                if (e.clientX === 0 && e.clientY === 0) return;
+                if (containerId === 'my-play-zone') {
+                    const rect = document.getElementById('my-play-zone').getBoundingClientRect();
+                    let x = ((e.clientX - rect.left) / currentScale) - dragOffsetX;
+                    let y = ((e.clientY - rect.top) / currentScale) - dragOffsetY;
+                    div.style.left = x + 'px';
+                    div.style.top = y + 'px';
+                }
+            });
+
+            div.addEventListener('dragend', (e) => {
+                if (containerId === 'my-play-zone') div.classList.remove('dragging-active');
             });
 
             return div;
@@ -1196,7 +1409,6 @@
             }
         });
 
-        // Left Click Actions
         document.addEventListener('click', (e) => {
             if (e.button !== 0) return;
             const cardEl = e.target.closest('.card');
@@ -1230,7 +1442,6 @@
             let targetGlobalZone = targetUI.replace('my-', '').replace('-zone', '') + '_' + myRole;
             let payload = { cardIds: draggedCardIds, toZone: targetGlobalZone, index: 'top' };
             
-            // X and Y calculations strictly when dropping onto Play Area
             if (targetUI.includes('play')) {
                 const rect = e.currentTarget.getBoundingClientRect();
                 let finalX = ((e.clientX - rect.left) / currentScale) - dragOffsetX;
@@ -1250,11 +1461,10 @@
         const cm = document.getElementById('context-menu');
         const cmOptions = document.getElementById('cm-options');
 
-        document.addEventListener('click', () => cm.style.display = 'none');
+        document.addEventListener('click', (e) => { if(!e.target.closest('#context-menu')) cm.style.display = 'none'; });
         
         function positionContextMenu(e) {
             cm.style.display = 'block';
-            cm.querySelectorAll('.submenu-content').forEach(sub => { sub.style.left = '100%'; sub.style.right = 'auto'; });
 
             const rect = cm.getBoundingClientRect();
             let left = e.pageX;
@@ -1268,24 +1478,6 @@
             cm.style.left = left + 'px';
             cm.style.top = top + 'px';
         }
-
-        document.addEventListener('mouseover', (e) => {
-            const submenuLi = e.target.closest('.submenu');
-            if (submenuLi) {
-                const subContent = submenuLi.querySelector('.submenu-content');
-                if (subContent) {
-                    const rect = subContent.getBoundingClientRect();
-                    if (rect.right > window.innerWidth) {
-                        subContent.style.left = 'auto';
-                        subContent.style.right = '100%';
-                    }
-                    if (rect.bottom > window.innerHeight) {
-                        subContent.style.top = 'auto';
-                        subContent.style.bottom = '0';
-                    }
-                }
-            }
-        });
 
         document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
@@ -1340,32 +1532,55 @@
                         });
                         buildMenuOption("Flip Over", () => requestAction('FLIP_CARDS', { cardIds: targetIds }));
                         
-                        const cLi = document.createElement('li');
-                        cLi.className = 'submenu';
-                        cLi.innerText = 'Counters ►';
-                        const cUl = document.createElement('ul');
-                        cUl.className = 'submenu-content';
-                        
-                        const addOpt = (lbl, type, amt) => {
+                        const buildCounterControl = (lbl, type) => {
                             const li = document.createElement('li');
-                            li.innerText = lbl;
-                            li.addEventListener('click', (ev) => { ev.stopPropagation(); requestAction('MODIFY_COUNTERS', { cardIds: targetIds, cType: type, amount: amt }); cm.style.display = 'none'; });
-                            cUl.appendChild(li);
+                            li.style.display = 'flex';
+                            li.style.justifyContent = 'space-between';
+                            li.style.alignItems = 'center';
+                            li.style.padding = '5px 15px';
+                            li.style.borderBottom = '1px solid #333';
+                            li.style.color = '#eee';
+                            li.style.cursor = 'default';
+                            
+                            const titleSpan = document.createElement('span');
+                            titleSpan.innerText = lbl;
+                            
+                            const btnContainer = document.createElement('div');
+                            btnContainer.style.display = 'flex';
+                            btnContainer.style.gap = '8px';
+                            
+                            const btnStyle = "background: #444; border: 1px solid #666; color: white; padding: 2px 8px; cursor: pointer; border-radius: 4px; font-weight: bold;";
+                            
+                            const btnMinus = document.createElement('button');
+                            btnMinus.innerText = '-';
+                            btnMinus.style.cssText = btnStyle;
+                            btnMinus.onclick = (ev) => { ev.stopPropagation(); requestAction('MODIFY_COUNTERS', { cardIds: targetIds, cType: type, amount: -1 }); };
+                            
+                            const btnPlus = document.createElement('button');
+                            btnPlus.innerText = '+';
+                            btnPlus.style.cssText = btnStyle;
+                            btnPlus.onclick = (ev) => { ev.stopPropagation(); requestAction('MODIFY_COUNTERS', { cardIds: targetIds, cType: type, amount: 1 }); };
+                            
+                            const btnTrash = document.createElement('button');
+                            btnTrash.innerText = '🗑️';
+                            btnTrash.title = "Clear Counter";
+                            btnTrash.style.cssText = btnStyle + " background: #8b0000; border-color: #aa0000;";
+                            btnTrash.onclick = (ev) => { ev.stopPropagation(); requestAction('CLEAR_COUNTER_TYPE', { cardIds: targetIds, cType: type }); };
+                            
+                            btnContainer.appendChild(btnMinus);
+                            btnContainer.appendChild(btnPlus);
+                            btnContainer.appendChild(btnTrash);
+                            
+                            li.appendChild(titleSpan);
+                            li.appendChild(btnContainer);
+                            
+                            li.addEventListener('mouseenter', () => li.style.background = 'transparent');
+                            
+                            cmOptions.appendChild(li);
                         };
-                        addOpt("Add +1/+1", 'p1p1', 1);
-                        addOpt("Remove +1/+1", 'p1p1', -1);
-                        addOpt("Add -1/-1", 'm1m1', 1);
-                        addOpt("Remove -1/-1", 'm1m1', -1);
-                        addOpt("Add Generic", 'generic', 1);
-                        addOpt("Remove Generic", 'generic', -1);
-                        
-                        const clrLi = document.createElement('li');
-                        clrLi.innerText = "Clear All Counters";
-                        clrLi.addEventListener('click', (ev) => { ev.stopPropagation(); requestAction('MODIFY_COUNTERS', { cardIds: targetIds, action: 'CLEAR' }); cm.style.display = 'none'; });
-                        cUl.appendChild(clrLi);
-                        
-                        cLi.appendChild(cUl);
-                        cmOptions.appendChild(cLi);
+
+                        buildCounterControl('Green Counter', 'green');
+                        buildCounterControl('Red Counter', 'red');
 
                         buildMenuOption("Delete Card(s)", () => requestAction('DELETE_CARDS', { cardIds: targetIds }));
                     }
@@ -1395,7 +1610,7 @@
         function buildMenuOption(text, callback) {
             const li = document.createElement('li');
             li.innerText = text;
-            li.addEventListener('click', callback);
+            li.addEventListener('click', (e) => { e.stopPropagation(); cm.style.display = 'none'; callback(); });
             cmOptions.appendChild(li);
         }
 
