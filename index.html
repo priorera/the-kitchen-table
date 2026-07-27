@@ -329,6 +329,7 @@
             </div>
             <div id="my-right-panel">
                 <div id="my-deck-zone" class="side-zone side-deck" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <button onclick="event.stopPropagation(); requestAction('UNTAP_ALL', {})" style="position: absolute; top: 5px; right: 5px; background: #28a745; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-weight: bold; cursor: pointer; z-index: 200; font-size: 0.8rem; box-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Untap</button>
                     <div class="zone-title" id="lbl-my-deck">My Deck</div>
                     <div class="zone-count" id="my-deck-count">0</div>
                 </div>
@@ -725,6 +726,31 @@
                         if (info) info.card.rotated = !info.card.rotated;
                     });
                     break;
+                case 'UNTAP_ALL':
+                    let untappedCount = 0;
+                    state.zones[`play_${player}`].forEach(c => {
+                        if (c.rotated) {
+                            c.rotated = false;
+                            untappedCount++;
+                        }
+                    });
+                    if (untappedCount > 0) {
+                        broadcastLog(`${state.names[player]} untapped ${untappedCount} card(s).`);
+                    }
+                    break;
+                case 'COPY_CARDS':
+                    payload.cardIds.forEach(id => {
+                        const info = findCardGlobal(id);
+                        if (info) {
+                            let newCard = JSON.parse(JSON.stringify(info.card));
+                            newCard.id = 'card_' + state.cardIdCounter++;
+                            if (newCard.x !== undefined) newCard.x += 20;
+                            if (newCard.y !== undefined) newCard.y += 20;
+                            state.zones[info.zone].push(newCard);
+                        }
+                    });
+                    broadcastLog(`${playerName} copied ${payload.cardIds.length} card(s).`);
+                    break;
                 case 'FLIP_CARDS':
                     payload.cardIds.forEach(id => {
                         const info = findCardGlobal(id);
@@ -878,6 +904,10 @@
                             }
                             if (scryCard.name) {
                                 resolvedCards[scryCard.name.toLowerCase()] = img;
+                                if (scryCard.name.includes('//')) {
+                                    const frontName = scryCard.name.split('//')[0].trim().toLowerCase();
+                                    resolvedCards[frontName] = img;
+                                }
                             }
                         });
                     }
@@ -1492,9 +1522,10 @@
                     if (zoneUI.includes('graveyard') || zoneUI.includes('exile')) {
                         let baseZone = zoneUI.replace('opp-', '').replace('-zone', '');
                         buildMenuOption("View All Cards", () => openZoneSearchModal(baseZone, oppRole));
-                    } else {
+                    } else if (!zoneUI.includes('play')) {
                         return; 
                     }
+                    buildMenuOption("Copy Card", () => requestAction('COPY_CARDS', { cardIds: [cardEl.id] }));
                 } else {
                     if (!selectedCardIds.has(cardEl.id)) {
                         selectedCardIds.clear();
@@ -1514,6 +1545,7 @@
                         buildMenuOption("Bottom of Deck (Random Order)", () => requestAction('MOVE_CARDS_RANDOM_BOTTOM', { cardIds: targetIds, toZone: `deck_${myRole}` }));
                         buildMenuOption("Shuffle Deck", () => requestAction('SHUFFLE_DECK', {}));
                         buildMenuOption("Flip Over", () => requestAction('FLIP_CARDS', { cardIds: targetIds }));
+                        buildMenuOption("Copy Card", () => requestAction('COPY_CARDS', { cardIds: targetIds }));
                         buildMenuOption("Delete Card(s)", () => requestAction('DELETE_CARDS', { cardIds: targetIds }));
                     } else {
                         if (baseZone === 'graveyard') buildMenuOption("View All Cards", () => openZoneSearchModal('graveyard', myRole));
@@ -1582,6 +1614,7 @@
                         buildCounterControl('Green Counter', 'green');
                         buildCounterControl('Red Counter', 'red');
 
+                        buildMenuOption("Copy Card", () => requestAction('COPY_CARDS', { cardIds: targetIds }));
                         buildMenuOption("Delete Card(s)", () => requestAction('DELETE_CARDS', { cardIds: targetIds }));
                     }
                 }
