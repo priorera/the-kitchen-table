@@ -1224,8 +1224,44 @@
                         buildMenuOption("Flip Over", () => requestAction('FLIP_CARDS', { cardIds: tIds }));
                         
                         ['green', 'red'].forEach(cType => {
-                            const li = document.createElement('li'); li.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:5px 15px;border-bottom:1px solid #333;cursor:default;';
-                            li.innerHTML = `<span>${cType.charAt(0).toUpperCase()+cType.slice(1)} Counter</span><div style="display:flex;gap:8px;"><button style="background:#444;color:white;border:1px solid #666;padding:2px 8px;border-radius:4px;" onclick="requestAction('MODIFY_COUNTERS',{cardIds:${JSON.stringify(tIds)},cType:'${cType}',amount:-1})">-</button><button style="background:#444;color:white;border:1px solid #666;padding:2px 8px;border-radius:4px;" onclick="requestAction('MODIFY_COUNTERS',{cardIds:${JSON.stringify(tIds)},cType:'${cType}',amount:1})">+</button><button style="background:#8b0000;color:white;border:1px solid #aa0000;padding:2px 8px;border-radius:4px;" onclick="requestAction('CLEAR_COUNTER_TYPE',{cardIds:${JSON.stringify(tIds)},cType:'${cType}'})">🗑️</button></div>`;
+                            const li = document.createElement('li');
+                            li.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:5px 15px;border-bottom:1px solid #333;cursor:default;';
+                            
+                            const span = document.createElement('span');
+                            span.innerText = cType.charAt(0).toUpperCase() + cType.slice(1) + ' Counter';
+                            li.appendChild(span);
+
+                            const btnContainer = document.createElement('div');
+                            btnContainer.style.cssText = 'display:flex;gap:8px;';
+
+                            const minusBtn = document.createElement('button');
+                            minusBtn.style.cssText = 'background:#444;color:white;border:1px solid #666;padding:2px 8px;border-radius:4px;cursor:pointer;';
+                            minusBtn.innerText = '-';
+                            minusBtn.onclick = (ev) => {
+                                ev.stopPropagation();
+                                requestAction('MODIFY_COUNTERS', { cardIds: tIds, cType: cType, amount: -1 });
+                            };
+
+                            const plusBtn = document.createElement('button');
+                            plusBtn.style.cssText = 'background:#444;color:white;border:1px solid #666;padding:2px 8px;border-radius:4px;cursor:pointer;';
+                            plusBtn.innerText = '+';
+                            plusBtn.onclick = (ev) => {
+                                ev.stopPropagation();
+                                requestAction('MODIFY_COUNTERS', { cardIds: tIds, cType: cType, amount: 1 });
+                            };
+
+                            const clearBtn = document.createElement('button');
+                            clearBtn.style.cssText = 'background:#8b0000;color:white;border:1px solid #aa0000;padding:2px 8px;border-radius:4px;cursor:pointer;';
+                            clearBtn.innerText = '🗑️';
+                            clearBtn.onclick = (ev) => {
+                                ev.stopPropagation();
+                                requestAction('CLEAR_COUNTER_TYPE', { cardIds: tIds, cType: cType });
+                            };
+
+                            btnContainer.appendChild(minusBtn);
+                            btnContainer.appendChild(plusBtn);
+                            btnContainer.appendChild(clearBtn);
+                            li.appendChild(btnContainer);
                             cmOptions.appendChild(li);
                         });
                         buildMenuOption("Copy Card", () => requestAction('COPY_CARDS', { cardIds: tIds }));
