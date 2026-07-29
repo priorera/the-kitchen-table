@@ -39,7 +39,7 @@
         #opponents-row { flex: 2; display: flex; flex-direction: row; gap: 10px; width: 100%; overflow: hidden; }
         .opp-block { flex: 1; display: flex; border: 1px solid #444; border-radius: 8px; background: rgba(0,0,0,0.3); padding: 5px; gap: 6px; }
         .opp-play-container { flex: 1; position: relative; border: 2px dashed #6a3030; border-radius: 8px; background: rgba(100, 30, 30, 0.1); overflow: hidden; }
-        .opp-side-panels { width: 140px; display: flex; flex-direction: column; gap: 6px; }
+        .opp-side-panels { width: 220px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
         
         #my-row { flex: 3; display: flex; flex-direction: row; gap: 10px; width: 100%; }
         #my-side-zones { width: 220px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
@@ -58,8 +58,7 @@
         .side-deck { border: 2px solid #666; background: rgba(0,0,0,0.5); box-shadow: inset 0 0 15px #000; }
         
         /* Max constraints prevent visual clipping in tight viewport boxes */
-        .side-zone .card { width: 130px; height: 182px; max-width: 90%; max-height: 90%; font-size: 0.8rem; padding: 4px; }
-        .opp-side-panels .side-zone .card { width: 65px; height: 91px; max-width: 90%; max-height: 90%; font-size: 0.6rem; padding: 2px; }
+        .side-zone .card { width: 130px; height: 182px; max-width: 90%; max-height: 90%; min-width: 0; min-height: 0; aspect-ratio: 5 / 7; font-size: 0.8rem; padding: 4px; }
 
         /* Draggable Widget Area */
         #widget-zone { position: absolute; left: 20px; top: 20px; width: 300px; height: 600px; max-height: 90vh; background: rgba(30, 38, 46, 0.9); backdrop-filter: blur(5px); border-radius: 8px; border: 1px solid #555; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 9000; display: flex; flex-direction: column; resize: both; overflow: hidden; }
@@ -68,7 +67,7 @@
         #widget-content { padding: 12px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
         /* Cards Default Size */
-        .card { width: 200px; height: 280px; min-width: 50px; min-height: 70px; background-color: #eee; border: 2px solid #222; border-radius: 12px; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.5); color: black; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; padding: 10px; word-wrap: break-word; z-index: 10; flex-shrink: 1; background-size: cover; background-position: center; }
+        .card { width: 200px; height: 280px; min-width: 50px; min-height: 70px; background-color: #eee; border: 2px solid #222; border-radius: 12px; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.5); color: black; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; padding: 10px; word-wrap: break-word; z-index: 10; flex-shrink: 1; background-size: 100% 100%; background-position: center; }
         .card.facedown { background: repeating-linear-gradient(45deg, #2b4162, #2b4162 10px, #1a283d 10px, #1a283d 20px) !important; border: 2px solid #fff; color: transparent !important; }
         .card:hover { box-shadow: 0 0 20px gold; z-index: 50; transform: scale(1.05); }
         .card.dragging-active { box-shadow: none !important; opacity: 1 !important; z-index: 9999 !important; }
@@ -80,12 +79,12 @@
         #my-hand-zone .card:hover { transform: translateY(-10px) scale(1.08); z-index: 100; }
         
         /* Scaled down opponent play cards so they look correct in smaller viewports */
-        .opp-play-container .card { width: 90px; height: 126px; font-size: 0.7rem; padding: 4px; transform: none; }
+        .opp-play-container .card { width: 90px; height: 126px; min-width: 0; min-height: 0; font-size: 0.7rem; padding: 4px; transform: none; }
         .opp-play-container .card.rotated { transform: rotate(90deg); }
         .opp-play-container .card.rotated:hover { transform: rotate(90deg) scale(1.05); }
 
         /* Hover Zoom Global Display */
-        #hover-zoom-display { display: none; position: fixed; pointer-events: none; z-index: 10000; border-radius: 12px; border: 3px solid #ffd700; box-shadow: 0 10px 40px rgba(0,0,0,1); background-size: cover; background-position: center; background-color: #eee; text-align: center; padding: 15px; color: black; font-weight: bold; align-items: center; justify-content: center; }
+        #hover-zoom-display { display: none; position: fixed; pointer-events: none; z-index: 10000; border-radius: 12px; border: 3px solid #ffd700; box-shadow: 0 10px 40px rgba(0,0,0,1); background-size: 100% 100%; background-position: center; background-color: #eee; text-align: center; padding: 15px; color: black; font-weight: bold; align-items: center; justify-content: center; }
 
         /* Counter System Styling */
         .counters-container { position: absolute; bottom: 8px; left: 8px; display: flex; gap: 5px; z-index: 25; flex-wrap: wrap; }
@@ -353,7 +352,12 @@
                     <label style="color: #ccc;">Create via Pasted Images:</label>
                     <button type="button" onclick="addCreateImageRow()" style="background: #3b5bdb; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;" title="Add slot">+</button>
                 </div>
-                <div id="create-image-imports-container"></div>
+                <div id="create-image-imports-container">
+                    <div class="create-image-import-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;" data-image-url="">
+                        <div class="paste-box" contenteditable="true" style="flex: 1; background: #111; border: 1px dashed #666; padding: 6px; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 30px; display: flex; align-items: center; justify-content: center;" onpaste="handleImagePaste(event, this)">Click & Press Ctrl+V to Paste Image</div>
+                        <input type="number" class="create-image-card-qty" value="1" min="1" max="99" style="width: 50px;">
+                    </div>
+                </div>
                 <button onclick="submitCreateCardImages()" style="width: 100%; background: #17a2b8; margin-top: 5px; font-weight:bold;">Create Pasted Image Card(s)</button>
             </div>
             <button onclick="document.getElementById('create-card-modal').style.display='none'" style="width: 100%;">Cancel / Close</button>
@@ -633,13 +637,17 @@
         /** ACTION DISPATCHER & BROADCAST **/
         function requestAction(type, payload) {
             const action = { type, player: myRole, payload };
-            if (isHost) processAction(action);
-            else if (myConnection && myConnection.open) myConnection.send({ type: 'ACTION', action: action });
+            if (isHost) {
+                processAction(action);
+            } else if (myConnection && myConnection.open) {
+                processAction(action);
+                myConnection.send({ type: 'ACTION', action: action });
+            }
         }
 
         function broadcastState() {
-            if (!isHost) return;
             renderAll();
+            if (!isHost) return;
             Object.values(connections).forEach(conn => { if (conn && conn.open) conn.send({ type: 'STATE_SYNC', state: state }); });
         }
 
@@ -655,7 +663,7 @@
             return `${state.names[ownerRole]}'s ${zoneType.charAt(0).toUpperCase() + zoneType.slice(1)}`;
         }
 
-        /** GAME LOGIC PROCESSOR (Only Host) **/
+        /** GAME LOGIC PROCESSOR (Only Host / Optimistic Guest) **/
         function processAction(action) {
             const { type, player, payload } = action;
             const playerName = state.names[player];
@@ -811,7 +819,7 @@
                     <span>${state.names[myRole] || 'Me'} <span style="font-size: 0.8rem; color: #bbb;">(🖐️ ${myHandCount})</span>:</span>
                     <div>
                         <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: '${myRole}', amount: -1})">-</button>
-                        <span style="display:inline-block; width: 35px; text-align: center; color: white;">${state.life[myRole] || 20}</span>
+                        <span style="display:inline-block; width: 35px; text-align: center; color: white;">${state.life[myRole] ?? 20}</span>
                         <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: '${myRole}', amount: 1})">+</button>
                     </div>
                 </div>`;
@@ -823,7 +831,7 @@
                     <span style="color:#aaa">${state.names[p]} <span style="font-size: 0.8rem; color: #888;">(🖐️ ${pHandCount})</span>:</span>
                     <div>
                         <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: '${p}', amount: -1})">-</button>
-                        <span style="display:inline-block; width: 35px; text-align: center; color: white;">${state.life[p] || 20}</span>
+                        <span style="display:inline-block; width: 35px; text-align: center; color: white;">${state.life[p] ?? 20}</span>
                         <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: '${p}', amount: 1})">+</button>
                     </div>
                 </div>`;
@@ -1114,16 +1122,42 @@
 
         async function submitCreateCardText() {
             const input = document.getElementById('create-card-input').value; if (!input || !input.trim()) return;
-            document.getElementById('create-card-input').value = 'Processing...';
+            const btn = document.querySelector('#create-card-modal button[onclick="submitCreateCardText()"]');
+            btn.innerText = "Fetching from Scryfall..."; btn.disabled = true;
+            
             const lines = input.split('\n').map(l => l.trim()).filter(l => l);
-            let newCards = [];
+            const reqs = [];
             lines.forEach(line => {
                 let qty = 1, cardStr = line;
                 let match = line.match(/^(\d+)\s+(.+)$/); if (match) { qty = parseInt(match[1]); cardStr = match[2].trim(); }
-                for(let i=0; i<qty; i++) newCards.push({ name: cardStr, imageUrl: '', facedown: false, rotated: false });
+                let setMatch = cardStr.match(/(.+?)\s+\((.+?)\)\s+(\S+)/); 
+                let idObj = setMatch ? { set: setMatch[2].toLowerCase(), collector_number: setMatch[3].toString() } : { name: cardStr.split('//')[0].trim() };
+                reqs.push({ qty, idObj, originalName: setMatch ? setMatch[1].trim() : cardStr });
             });
+            
+            const identifiers = Array.from(new Map(reqs.map(r => [r.idObj.name || (r.idObj.set + r.idObj.collector_number), r.idObj])).values());
+            let resolved = {}; 
+            for(let i=0; i < identifiers.length; i+=75) {
+                try {
+                    const res = await fetch('https://api.scryfall.com/cards/collection', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identifiers: identifiers.slice(i, i+75) }) });
+                    const data = await res.json();
+                    if (data.data) data.data.forEach((scry) => {
+                        let img = (scry.image_uris && scry.image_uris.normal) || (scry.card_faces && scry.card_faces[0].image_uris && scry.card_faces[0].image_uris.normal) || '';
+                        if (scry.name) { resolved[scry.name.toLowerCase()] = img; if (scry.name.includes('//')) resolved[scry.name.split('//')[0].trim().toLowerCase()] = img; }
+                    });
+                } catch (e) {}
+            }
+            
+            let newCards = [];
+            reqs.forEach(req => { 
+                const img = resolved[(req.idObj.name || req.originalName).toLowerCase()] || ''; 
+                for(let i=0; i<req.qty; i++) newCards.push({ name: req.originalName, imageUrl: img, facedown: false, rotated: false }); 
+            });
+            
             document.getElementById('create-card-modal').style.display = 'none';
             if(newCards.length > 0 && activeCreateZone) requestAction('IMPORT_CARDS', { cards: newCards, zone: activeCreateZone });
+            
+            btn.innerText = "Create Text Card(s)"; btn.disabled = false;
         }
 
         function importPokerDeck() {
