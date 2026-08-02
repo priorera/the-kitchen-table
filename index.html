@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Only-HTML Card Engine (Up to 4 Players)</title>
+    <title>The Kitchen Table</title>
     <!-- PeerJS for Peer-to-Peer Networking -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
@@ -172,34 +172,34 @@
     <div id="login-screen">
         <div class="login-box">
             <h2 style="margin-bottom: 5px;">The Kitchen Table</h2>
-            <p style="margin-bottom: 20px; color: #aaa;">Greetings, wizard - wanna play a game?</p>
-            <p style="margin-bottom: 20px; color: #aaa;">What......is your name?</p>
-            <input type="text" id="player-name" placeholder="Enter Your Display Name" autocomplete="off" maxlength="10">
-            <p style="margin-bottom: 20px; color: #aaa;">What......is the magic word?</p>
-            <input type="text" id="game-code" placeholder="Enter 6+ character Game Code" autocomplete="off" maxlength="64">
-            <div id="error-msg">Code must be 6 characters minimum.</div>
-            <button id="btn-host" disabled>Host Game</button>
+            <p style="margin-bottom: 20px; color: #aaa;">Greetings, wizard. Wanna sling some spells?</p>
+            <p style="margin-bottom: 20px; color: #aaa;">What is your name?</p>
+            <input type="text" id="player-name" placeholder="Click here to enter your name" autocomplete="off" maxlength="10">
+            <p style="margin-bottom: 20px; color: #aaa;">What is the Magic Word?</p>
+            <input type="text" id="game-code" placeholder="Click here to enter the Magic Word" autocomplete="off" maxlength="64">
+            <div id="error-msg">Magic Word must be 6 characters minimum.</div>
+            <button id="btn-host" disabled>Start Game</button>
             <button id="btn-join" disabled>Join Game</button>
-            <div id="loading-msg">Connecting to signaling network...</div>
+            <div id="loading-msg">Waggling fingers...</div>
         </div>
     </div>
 
     <!-- General Error Modal -->
     <div id="error-modal" class="overlay-modal">
         <div class="error-content">
-            <h3 style="color: #fff; margin-bottom: 10px;">Connection Status</h3>
-            <p id="error-details">Something went wrong.</p>
-            <button onclick="document.getElementById('error-modal').style.display='none'">Acknowledge</button>
+            <h3 style="color: #fff; margin-bottom: 10px;">Telepathy Spell Status</h3>
+            <p id="error-details">Something went wrong. Unable to read the opponent's mind.</p>
+            <button onclick="document.getElementById('error-modal').style.display='none'">Hmmm</button>
         </div>
     </div>
 
     <!-- On-Theme New Game Modal -->
     <div id="new-game-modal" class="overlay-modal">
         <div class="modal-box" style="text-align: center; width: 400px;">
-            <h3>Reset Game Board</h3>
+            <h3>Restart The Wizards Duel</h3>
             <p style="margin-bottom: 20px; color: #ccc;">Are you sure you want to clear your side of the board and reset to your last imported deck?</p>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button onclick="confirmNewGame()" style="background: #28a745; font-weight: bold;">Yes, Reset</button>
+                <button onclick="confirmNewGame()" style="background: #28a745; font-weight: bold;">Yes, A Wizard Is Always Sure</button>
                 <button onclick="document.getElementById('new-game-modal').style.display='none'">Cancel</button>
             </div>
         </div>
@@ -208,11 +208,11 @@
     <!-- Top X Search Modal -->
     <div id="top-x-modal" class="overlay-modal">
         <div class="modal-box" style="text-align: center; width: 350px;">
-            <h3>Search Top X of Deck</h3>
-            <p style="margin-bottom: 10px; color: #ccc;">How many cards would you like to view?</p>
+            <h3>Conjure The Top Of Your Deck</h3>
+            <p style="margin-bottom: 10px; color: #ccc;">How many cards would you like to conjure from the top of your deck?</p>
             <input type="number" id="top-x-input" value="5" min="1" max="100" style="width: 100%; margin-bottom: 15px; font-size: 1.2rem;">
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button onclick="submitTopXSearch()" style="background: #007bff; font-weight: bold;">Search</button>
+                <button onclick="submitTopXSearch()" style="background: #007bff; font-weight: bold;">Conjure</button>
                 <button onclick="document.getElementById('top-x-modal').style.display='none'">Cancel</button>
             </div>
         </div>
@@ -224,7 +224,7 @@
         <!-- Draggable UI Widget -->
         <div id="widget-zone">
             <div id="widget-header">
-                <span>≡ Game Tools</span>
+                <span>≡ Wizard's Toolkit</span>
             </div>
             <div id="widget-content">
                 <div class="life-counter" id="dynamic-life-container">
@@ -244,14 +244,14 @@
                 <div class="widget-toggles">
                     <div class="toggle-row">
                         <div>
-                            <span>UI Size: </span>
+                            <span>Transmogrify UI: </span>
                             <button onclick="adjustUIText(-0.1)">-</button>
                             <button onclick="adjustUIText(0.1)">+</button>
                         </div>
                     </div>
                     <div class="toggle-row">
                         <div>
-                            <span>Hover Zoom Size: </span>
+                            <span>Transmogrify Hover Zoom: </span>
                             <button onclick="adjustZoom(-0.5)">-</button>
                             <button onclick="adjustZoom(0.5)">+</button>
                         </div>
@@ -272,10 +272,10 @@
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <button class="btn-green" onclick="document.getElementById('import-overlay').style.display='flex'">Import Deck</button>
-                    <button class="btn-green" style="background:#0dcaf0 !important; color:#000;" onclick="document.getElementById('import-playmat-modal').style.display='flex'">Import Playmat</button>
-                    <button class="btn-green" style="background:#6f42c1 !important;" onclick="document.getElementById('import-cardback-modal').style.display='flex'">Import Card Back</button>
-                    <button class="btn-yellow" onclick="document.getElementById('new-game-modal').style.display='flex'">New Game</button>
+                    <button class="btn-green" onclick="document.getElementById('import-overlay').style.display='flex'">Conjure Deck</button>
+                    <button class="btn-green" style="background:#0dcaf0 !important; color:#000;" onclick="document.getElementById('import-playmat-modal').style.display='flex'">Conjure Playmat</button>
+                    <button class="btn-green" style="background:#6f42c1 !important;" onclick="document.getElementById('import-cardback-modal').style.display='flex'">Conjure Card Back</button>
+                    <button class="btn-yellow" onclick="document.getElementById('new-game-modal').style.display='flex'">Conjure New Game</button>
                 </div>
                 
                 <div id="log"></div>
@@ -330,12 +330,12 @@
     <div id="search-deck-modal" class="overlay-modal">
         <div class="modal-box" style="width: 90vw; height: 90vh; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px;">
-                <h3 id="search-deck-title" style="border:none; margin:0; padding:0;">Search Zone (<span id="search-deck-count">0</span> cards)</h3>
+                <h3 id="search-deck-title" style="border:none; margin:0; padding:0;">Peer Through the Spellbook (<span id="search-deck-count">0</span> cards)</h3>
                 <div style="display: flex; gap: 15px; align-items: center;">
                     <label id="shuffle-checkbox-container" style="color: #ccc; display: flex; align-items: center; gap: 5px;">
                         <input type="checkbox" id="shuffle-after-search" checked> Shuffle Deck After Searching
                     </label>
-                    <button onclick="closeSearchDeckModal()">Close Window</button>
+                    <button onclick="closeSearchDeckModal()">Close Spellbook</button>
                 </div>
             </div>
             <div id="search-deck-grid" style="flex: 1; display: flex; flex-wrap: wrap; gap: 20px; overflow-y: auto; align-content: flex-start; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
@@ -346,26 +346,26 @@
     <!-- Import Playmat Modal -->
     <div id="import-playmat-modal" class="overlay-modal">
         <div class="modal-box">
-            <h3>Import Custom Playmat</h3>
-            <p style="color:#ccc; margin-bottom: 10px; font-size: 0.9rem;">Changes the background image of your Play zone locally.</p>
+            <h3>Conjure Custom Playmat</h3>
+            <p style="color:#ccc; margin-bottom: 10px; font-size: 0.9rem;">Transmogrifies the background image of your Play zone.</p>
             <div class="paste-box" contenteditable="true" style="background: #111; border: 1px dashed #666; padding: 6px; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 80px; display: flex; align-items: center; justify-content: center; cursor: text;" onpaste="handlePlaymatPaste(event, this)">Click Here & Press Ctrl+V to Paste Image</div>
             <div style="margin-top: 15px; display: flex; gap: 10px;">
-                <button onclick="applyPlaymat()" style="flex:1; background: #007bff; font-weight: bold;">Apply Playmat</button>
-                <button onclick="clearPlaymat()" style="background: #8b0000;">Clear Image</button>
+                <button onclick="applyPlaymat()" style="flex:1; background: #007bff; font-weight: bold;">Conjure Playmat</button>
+                <button onclick="clearPlaymat()" style="background: #8b0000;">Disappear Playmat</button>
             </div>
-            <button onclick="document.getElementById('import-playmat-modal').style.display='none'" style="width: 100%; margin-top: 10px;">Cancel / Close</button>
+            <button onclick="document.getElementById('import-playmat-modal').style.display='none'" style="width: 100%; margin-top: 10px;">Cancel</button>
         </div>
     </div>
 
     <!-- Import Card Back Modal -->
     <div id="import-cardback-modal" class="overlay-modal">
         <div class="modal-box">
-            <h3>Import Custom Card Back</h3>
-            <p style="color:#ccc; margin-bottom: 10px; font-size: 0.9rem;">Changes your card backs for you and opponents. Recommended pixel size: 500x700 pixels (5:7 ratio) for a perfect fit.</p>
+            <h3>Conjure Custom Card Back</h3>
+            <p style="color:#ccc; margin-bottom: 10px; font-size: 0.9rem;">Transmogrifies your card backs.</p>
             <div class="paste-box" contenteditable="true" style="background: #111; border: 1px dashed #666; padding: 6px; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 80px; display: flex; align-items: center; justify-content: center; cursor: text;" onpaste="handleCardBackPaste(event, this)">Click Here & Press Ctrl+V to Paste Image</div>
             <div style="margin-top: 15px; display: flex; gap: 10px;">
-                <button onclick="applyCardBack()" style="flex:1; background: #007bff; font-weight: bold;">Apply Card Back</button>
-                <button onclick="clearCardBack()" style="background: #8b0000;">Clear Image</button>
+                <button onclick="applyCardBack()" style="flex:1; background: #007bff; font-weight: bold;">Conjure Card Back</button>
+                <button onclick="clearCardBack()" style="background: #8b0000;">Disappear Card Back</button>
             </div>
             <button onclick="document.getElementById('import-cardback-modal').style.display='none'" style="width: 100%; margin-top: 10px;">Cancel / Close</button>
         </div>
@@ -374,18 +374,18 @@
     <!-- Regular Import Deck Overlay -->
     <div id="import-overlay" class="overlay-modal">
         <div class="modal-box">
-            <h3>Import Deck (Your Deck)</h3>
+            <h3>Conjure Your Wizard's Arsenal</h3>
             <div style="border-bottom: 1px solid #444; margin-bottom: 15px; padding-bottom: 15px;">
-                <label style="color: #ccc; display: block; margin-bottom: 8px;">Paste List (Auto-fetches art via Scryfall):</label>
+                <label style="color: #ccc; display: block; margin-bottom: 8px;">Paste Card List (Auto-fetches art via Scryfall):</label>
                 <textarea id="deck-list" style="height: 120px;" placeholder="4 Opt (XLN) 65..."></textarea>
-                <button onclick="importTextDeck()" style="width: 100%; background: #007bff; font-weight: bold;">Fetch & Import Deck</button>
+                <button onclick="importTextDeck()" style="width: 100%; background: #007bff; font-weight: bold;">Conjure Deck</button>
             </div>
             <div style="margin-bottom: 15px;">
-                <button onclick="importPokerDeck()" style="width: 100%; background: #6f42c1;">Quick Import: Standard 52 Poker Deck</button>
+                <button onclick="importPokerDeck()" style="width: 100%; background: #6f42c1;">Quick Conjure: Standard 52-Card Poker Deck</button>
             </div>
             <div style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <label style="color: #ccc;">Import Custom Images (Manual):</label>
+                    <label style="color: #ccc;">Conjure Custom Card Images (Manual):</label>
                     <button type="button" onclick="addImageImportRow()" style="background: #3b5bdb; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;" title="Add slot">+</button>
                 </div>
                 <div id="image-imports-container">
@@ -394,24 +394,24 @@
                         <input type="number" class="image-card-qty" value="1" min="1" max="99" style="width: 50px;">
                     </div>
                 </div>
-                <button onclick="importImageDeck()" style="width: 100%; background: #17a2b8; margin-top: 5px; margin-bottom: 10px;">Import Pasted Image Card(s)</button>
+                <button onclick="importImageDeck()" style="width: 100%; background: #17a2b8; margin-top: 5px; margin-bottom: 10px;">Conjure Pasted Image Card(s)</button>
             </div>
-            <button onclick="document.getElementById('import-overlay').style.display='none'" style="width: 100%;">Cancel / Close</button>
+            <button onclick="document.getElementById('import-overlay').style.display='none'" style="width: 100%;">Cancel</button>
         </div>
     </div>
 
     <!-- Create Card Overlay -->
     <div id="create-card-modal" class="overlay-modal">
         <div class="modal-box">
-            <h3>Create Card(s)</h3>
+            <h3>Conjure Card(s)</h3>
             <div style="border-bottom: 1px solid #444; margin-bottom: 15px; padding-bottom: 15px;">
                 <label style="color: #ccc; display: block; margin-bottom: 8px;">Enter card details:</label>
                 <textarea id="create-card-input" style="height: 80px;" placeholder="4 Lightning Bolt"></textarea>
-                <button onclick="submitCreateCardText()" style="width: 100%; background: #007bff; font-weight: bold;">Create Text Card(s)</button>
+                <button onclick="submitCreateCardText()" style="width: 100%; background: #007bff; font-weight: bold;">Conjure Text Card(s)</button>
             </div>
             <div style="margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <label style="color: #ccc;">Create via Pasted Images:</label>
+                    <label style="color: #ccc;">Conjure via Pasted Images:</label>
                     <button type="button" onclick="addCreateImageRow()" style="background: #3b5bdb; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;" title="Add slot">+</button>
                 </div>
                 <div id="create-image-imports-container">
@@ -420,16 +420,16 @@
                         <input type="number" class="create-image-card-qty" value="1" min="1" max="99" style="width: 50px;">
                     </div>
                 </div>
-                <button onclick="submitCreateCardImages()" style="width: 100%; background: #17a2b8; margin-top: 5px; font-weight:bold;">Create Pasted Image Card(s)</button>
+                <button onclick="submitCreateCardImages()" style="width: 100%; background: #17a2b8; margin-top: 5px; font-weight:bold;">Conjure Pasted Image Card(s)</button>
             </div>
-            <button onclick="document.getElementById('create-card-modal').style.display='none'" style="width: 100%;">Cancel / Close</button>
+            <button onclick="document.getElementById('create-card-modal').style.display='none'" style="width: 100%;">Cancel</button>
         </div>
     </div>
 
     <!-- Create Token Modal -->
     <div id="create-token-modal" class="overlay-modal">
         <div class="modal-box" style="width: 420px;">
-            <h3>Create Token Card</h3>
+            <h3>Conjure Token Card</h3>
             <div style="margin-bottom: 12px;">
                 <label style="color: #ccc; display: block; margin-bottom: 4px; font-size: 0.9rem;">Name (Card Title):</label>
                 <input type="text" id="token-name-input" placeholder="e.g. Goblin, Treasure, 2/2 Zombie" style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 4px;">
@@ -454,7 +454,7 @@
                 <input type="text" id="token-pt-input" placeholder="e.g. 1/1, 2/2" style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 4px;">
             </div>
             <div style="display: flex; gap: 10px;">
-                <button onclick="submitCreateToken()" style="flex: 1; background: #28a745; font-weight: bold; padding: 10px;">Create Token</button>
+                <button onclick="submitCreateToken()" style="flex: 1; background: #28a745; font-weight: bold; padding: 10px;">Conjure Token</button>
                 <button onclick="document.getElementById('create-token-modal').style.display='none'" style="background: #444; padding: 10px;">Cancel</button>
             </div>
         </div>
