@@ -171,9 +171,11 @@
     <!-- Login / Navigation -->
     <div id="login-screen">
         <div class="login-box">
-            <h2 style="margin-bottom: 5px;">Multiplayer Card Engine</h2>
-            <p style="margin-bottom: 20px; color: #aaa;">Powered by PeerJS (Up to 4 Players)</p>
+            <h2 style="margin-bottom: 5px;">The Kitchen Table</h2>
+            <p style="margin-bottom: 20px; color: #aaa;">Greetings, wizard - wanna play a game?</p>
+            <p style="margin-bottom: 20px; color: #aaa;">What......is your name?</p>
             <input type="text" id="player-name" placeholder="Enter Your Display Name" autocomplete="off" maxlength="10">
+            <p style="margin-bottom: 20px; color: #aaa;">What......is the magic word?</p>
             <input type="text" id="game-code" placeholder="Enter 6+ character Game Code" autocomplete="off" maxlength="64">
             <div id="error-msg">Code must be 6 characters minimum.</div>
             <button id="btn-host" disabled>Host Game</button>
@@ -241,7 +243,6 @@
 
                 <div class="widget-toggles">
                     <div class="toggle-row">
-                        <label><input type="checkbox" id="toggle-log" checked onchange="toggleLogView()"> Show Log</label>
                         <div>
                             <span>UI Size: </span>
                             <button onclick="adjustUIText(-0.1)">-</button>
@@ -249,15 +250,20 @@
                         </div>
                     </div>
                     <div class="toggle-row">
-                        <span>Hover Zoom Size: </span>
                         <div>
+                            <span>Hover Zoom Size: </span>
                             <button onclick="adjustZoom(-0.5)">-</button>
                             <button onclick="adjustZoom(0.5)">+</button>
                         </div>
                     </div>
                     <div class="toggle-row">
                         <label><input type="checkbox" id="toggle-hand-pos" onchange="toggleHandPos()"> Swap Hand/Play</label>
+                    </div>
+                    <div class="toggle-row">
                         <label><input type="checkbox" id="toggle-side-pos" onchange="toggleSidePos()"> Swap Sides L/R</label>
+                    </div>
+                    <div class="toggle-row">
+                        <label><input type="checkbox" id="toggle-log" checked onchange="toggleLogView()"> Show Log</label>
                     </div>
                     <div style="color: #bbb; font-size: 0.85rem; margin-top: 5px;">Reorder Side Zones:</div>
                     <div id="reorder-controls" style="display: flex; flex-direction: column; gap: 4px;">
@@ -266,10 +272,10 @@
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <button class="btn-green" onclick="document.getElementById('import-overlay').style.display='flex'">Import Deck (Scryfall/Images)</button>
+                    <button class="btn-green" onclick="document.getElementById('import-overlay').style.display='flex'">Import Deck</button>
                     <button class="btn-green" style="background:#0dcaf0 !important; color:#000;" onclick="document.getElementById('import-playmat-modal').style.display='flex'">Import Playmat</button>
                     <button class="btn-green" style="background:#6f42c1 !important;" onclick="document.getElementById('import-cardback-modal').style.display='flex'">Import Card Back</button>
-                    <button class="btn-yellow" onclick="document.getElementById('new-game-modal').style.display='flex'">New Game (Reset Board)</button>
+                    <button class="btn-yellow" onclick="document.getElementById('new-game-modal').style.display='flex'">New Game</button>
                 </div>
                 
                 <div id="log"></div>
