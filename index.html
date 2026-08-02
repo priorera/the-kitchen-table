@@ -11,6 +11,8 @@
         :root {
             --ui-font-size: 1rem;
             --hover-scale: 2;
+            --ui-scale: 1; /* Added for dynamic dice resizing */
+            --custom-card-back: none; /* Added for custom card backs */
         }
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-size: var(--ui-font-size); }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e262e; color: white; width: 100vw; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -57,8 +59,22 @@
         .side-zone { flex: 1; border: 2px dashed #555; border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); min-height: 0; overflow: hidden; cursor: pointer; }
         .side-deck { border: 2px solid #666; background: rgba(0,0,0,0.5); box-shadow: inset 0 0 15px #000; }
         
-        /* Max constraints prevent visual clipping in tight viewport boxes */
-        .side-zone .card { width: 130px; height: 182px; max-width: 90%; max-height: 90%; min-width: 0; min-height: 0; aspect-ratio: 5 / 7; font-size: 0.8rem; padding: 4px; }
+        /* Max constraints prevent visual clipping in tight viewport boxes. Added overriding styles to prevent side zones from getting absolute positioning */
+        .side-zone .card { 
+            position: relative !important; 
+            left: auto !important; 
+            top: auto !important; 
+            margin: 0 !important; 
+            width: 130px; 
+            height: 182px; 
+            max-width: 90%; 
+            max-height: 90%; 
+            min-width: 0; 
+            min-height: 0; 
+            aspect-ratio: 5 / 7; 
+            font-size: 0.8rem; 
+            padding: 4px; 
+        }
 
         /* Draggable Widget Area */
         #widget-zone { position: absolute; left: 20px; top: 20px; width: 300px; height: 600px; max-height: 90vh; background: rgba(30, 38, 46, 0.9); backdrop-filter: blur(5px); border-radius: 8px; border: 1px solid #555; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 9000; display: flex; flex-direction: column; resize: both; overflow: hidden; }
@@ -68,7 +84,10 @@
 
         /* Cards Default Size */
         .card { width: 200px; height: 280px; min-width: 50px; min-height: 70px; background-color: #eee; border: 2px solid #222; border-radius: 12px; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.5); color: black; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; padding: 10px; word-wrap: break-word; z-index: 10; flex-shrink: 1; background-size: 100% 100%; background-position: center; }
+        
+        /* Card Back Styles */
         .card.facedown { background: repeating-linear-gradient(45deg, #2b4162, #2b4162 10px, #1a283d 10px, #1a283d 20px) !important; border: 2px solid #fff; color: transparent !important; }
+        
         .card:hover { box-shadow: 0 0 20px gold; z-index: 50; transform: scale(1.05); }
         .card.dragging-active { box-shadow: none !important; opacity: 1 !important; z-index: 9999 !important; }
         .card.rotated { transform: rotate(90deg); }
@@ -103,17 +122,17 @@
         .life-btn { background: #555; color: white; border: none; padding: 2px 10px; cursor: pointer; border-radius: 4px; }
         .life-btn:hover { background: #777; }
         
-        /* Realistic Dice & Coin Graphics */
+        /* Realistic Dice & Coin Graphics - Now dynamically linked to UI Scale */
         .dice-roller { display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #444; padding-bottom: 10px; justify-content: center; align-items: center; }
         .dice-roller button { background: linear-gradient(135deg, #f8f9fa, #e9ecef); color: #212529; border: 2px solid #ced4da; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.8); transition: all 0.2s ease; }
         .dice-roller button:hover { background: linear-gradient(135deg, #ffffff, #dee2e6); border-color: #6c757d; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.4); }
-        .dice-roller button:nth-child(1) { width: 40px; height: 38px; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background: linear-gradient(180deg, #fffae6, #ffe066); border: none; padding-top: 10px; }
-        .dice-roller button:nth-child(2) { width: 38px; height: 38px; border-radius: 8px; background: linear-gradient(145deg, #ffffff, #f1f3f5); border: 2px solid #adb5bd; }
-        .dice-roller button:nth-child(3) { width: 38px; height: 40px; clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 20% 100%, 0% 35%); background: linear-gradient(145deg, #e7f5ff, #74c0fc); border: none; }
-        .dice-roller button:nth-child(4) { width: 40px; height: 38px; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); background: linear-gradient(145deg, #f3f0ff, #b197fc); border: none; }
-        .dice-roller button:nth-child(5) { width: 40px; height: 40px; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); background: linear-gradient(145deg, #fff5f5, #ff8787); border: none; }
-        .dice-roller button:nth-child(6) { width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, #fff3bf 0%, #fab005 100%); border: 2px solid #e67700; color: #5c3c00; }
-        .dice-roller button.coin { width: 60px; height: 60px; border-radius: 50%; background: radial-gradient(circle, #ffe066 0%, #f59f00 70%, #d9480f 100%); border: 3px dashed #fff3bf; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
+        .dice-roller button:nth-child(1) { width: calc(40px * var(--ui-scale)); height: calc(38px * var(--ui-scale)); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background: linear-gradient(180deg, #fffae6, #ffe066); border: none; padding-top: 10px; }
+        .dice-roller button:nth-child(2) { width: calc(38px * var(--ui-scale)); height: calc(38px * var(--ui-scale)); border-radius: 8px; background: linear-gradient(145deg, #ffffff, #f1f3f5); border: 2px solid #adb5bd; }
+        .dice-roller button:nth-child(3) { width: calc(38px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 20% 100%, 0% 35%); background: linear-gradient(145deg, #e7f5ff, #74c0fc); border: none; }
+        .dice-roller button:nth-child(4) { width: calc(40px * var(--ui-scale)); height: calc(38px * var(--ui-scale)); clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); background: linear-gradient(145deg, #f3f0ff, #b197fc); border: none; }
+        .dice-roller button:nth-child(5) { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); background: linear-gradient(145deg, #fff5f5, #ff8787); border: none; }
+        .dice-roller button:nth-child(6) { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); border-radius: 50%; background: radial-gradient(circle, #fff3bf 0%, #fab005 100%); border: 2px solid #e67700; color: #5c3c00; }
+        .dice-roller button.coin { width: calc(60px * var(--ui-scale)); height: calc(60px * var(--ui-scale)); border-radius: 50%; background: radial-gradient(circle, #ffe066 0%, #f59f00 70%, #d9480f 100%); border: 3px dashed #fff3bf; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
         
         #log { color: #ccc; flex: 1; min-height: 100px; overflow-y: auto; border: 1px inset #444; padding: 5px; background: #111; border-radius: 4px; display: block; }
         #log div { margin-bottom: 4px; border-bottom: 1px solid #222; padding-bottom: 2px; }
@@ -140,6 +159,11 @@
         #context-menu ul { list-style: none; }
         #context-menu li { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #333; color: #eee; position: relative; }
         #context-menu li:hover { background: #3b5bdb; }
+        
+        /* Submenu Styling for Mana Context Menu */
+        .cm-submenu-parent { position: relative; }
+        .cm-submenu { display: none; position: absolute; left: 100%; top: -1px; background: #2b2b2b; border: 1px solid #555; list-style: none; min-width: 180px; box-shadow: 2px 2px 15px rgba(0,0,0,0.8); z-index: 10001; }
+        .cm-submenu-parent:hover .cm-submenu { display: block; }
     </style>
 </head>
 <body>
@@ -243,6 +267,8 @@
 
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <button class="btn-green" onclick="document.getElementById('import-overlay').style.display='flex'">Import Deck (Scryfall/Images)</button>
+                    <button class="btn-green" style="background:#0dcaf0 !important; color:#000;" onclick="document.getElementById('import-playmat-modal').style.display='flex'">Import Playmat</button>
+                    <button class="btn-green" style="background:#6f42c1 !important;" onclick="document.getElementById('import-cardback-modal').style.display='flex'">Import Card Back</button>
                     <button class="btn-yellow" onclick="document.getElementById('new-game-modal').style.display='flex'">New Game (Reset Board)</button>
                 </div>
                 
@@ -301,7 +327,7 @@
                 <h3 id="search-deck-title" style="border:none; margin:0; padding:0;">Search Zone (<span id="search-deck-count">0</span> cards)</h3>
                 <div style="display: flex; gap: 15px; align-items: center;">
                     <label id="shuffle-checkbox-container" style="color: #ccc; display: flex; align-items: center; gap: 5px;">
-                        <input type="checkbox" id="shuffle-after-search" checked> Shuffle After Searching
+                        <input type="checkbox" id="shuffle-after-search" checked> Shuffle Deck After Searching
                     </label>
                     <button onclick="closeSearchDeckModal()">Close Window</button>
                 </div>
@@ -311,6 +337,35 @@
         </div>
     </div>
 
+    <!-- Import Playmat Modal -->
+    <div id="import-playmat-modal" class="overlay-modal">
+        <div class="modal-box">
+            <h3>Import Custom Playmat</h3>
+            <p style="color:#ccc; margin-bottom: 10px; font-size: 0.9rem;">Changes the background image of your Play zone locally.</p>
+            <div class="paste-box" contenteditable="true" style="background: #111; border: 1px dashed #666; padding: 6px; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 80px; display: flex; align-items: center; justify-content: center; cursor: text;" onpaste="handlePlaymatPaste(event, this)">Click Here & Press Ctrl+V to Paste Image</div>
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button onclick="applyPlaymat()" style="flex:1; background: #007bff; font-weight: bold;">Apply Playmat</button>
+                <button onclick="clearPlaymat()" style="background: #8b0000;">Clear Image</button>
+            </div>
+            <button onclick="document.getElementById('import-playmat-modal').style.display='none'" style="width: 100%; margin-top: 10px;">Cancel / Close</button>
+        </div>
+    </div>
+
+    <!-- Import Card Back Modal -->
+    <div id="import-cardback-modal" class="overlay-modal">
+        <div class="modal-box">
+            <h3>Import Custom Card Back</h3>
+            <p style="color:#ccc; margin-bottom: 10px; font-size: 0.9rem;">Changes your card backs for you and opponents. Recommended pixel size: 500x700 pixels (5:7 ratio) for a perfect fit.</p>
+            <div class="paste-box" contenteditable="true" style="background: #111; border: 1px dashed #666; padding: 6px; color: #aaa; text-align: center; border-radius: 4px; outline: none; min-height: 80px; display: flex; align-items: center; justify-content: center; cursor: text;" onpaste="handleCardBackPaste(event, this)">Click Here & Press Ctrl+V to Paste Image</div>
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button onclick="applyCardBack()" style="flex:1; background: #007bff; font-weight: bold;">Apply Card Back</button>
+                <button onclick="clearCardBack()" style="background: #8b0000;">Clear Image</button>
+            </div>
+            <button onclick="document.getElementById('import-cardback-modal').style.display='none'" style="width: 100%; margin-top: 10px;">Cancel / Close</button>
+        </div>
+    </div>
+
+    <!-- Regular Import Deck Overlay -->
     <div id="import-overlay" class="overlay-modal">
         <div class="modal-box">
             <h3>Import Deck (Your Deck)</h3>
@@ -339,6 +394,7 @@
         </div>
     </div>
 
+    <!-- Create Card Overlay -->
     <div id="create-card-modal" class="overlay-modal">
         <div class="modal-box">
             <h3>Create Card(s)</h3>
@@ -364,6 +420,40 @@
         </div>
     </div>
 
+    <!-- Create Token Modal -->
+    <div id="create-token-modal" class="overlay-modal">
+        <div class="modal-box" style="width: 420px;">
+            <h3>Create Token Card</h3>
+            <div style="margin-bottom: 12px;">
+                <label style="color: #ccc; display: block; margin-bottom: 4px; font-size: 0.9rem;">Name (Card Title):</label>
+                <input type="text" id="token-name-input" placeholder="e.g. Goblin, Treasure, 2/2 Zombie" style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 4px;">
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label style="color: #ccc; display: block; margin-bottom: 4px; font-size: 0.9rem;">Color:</label>
+                <select id="token-color-select" style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 4px;">
+                    <option value="white">White</option>
+                    <option value="blue">Blue</option>
+                    <option value="black">Black</option>
+                    <option value="red">Red</option>
+                    <option value="green">Green</option>
+                    <option value="gray" selected>Gray</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label style="color: #ccc; display: block; margin-bottom: 4px; font-size: 0.9rem;">Rules Text:</label>
+                <textarea id="token-rules-input" placeholder="e.g. Sacrifice this artifact: Add one mana of any color." style="height: 80px; width: 100%; background: #111; color: #fff; padding: 8px; font-family: inherit; border: 1px solid #444; border-radius: 4px;"></textarea>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="color: #ccc; display: block; margin-bottom: 4px; font-size: 0.9rem;">Power / Toughness:</label>
+                <input type="text" id="token-pt-input" placeholder="e.g. 1/1, 2/2" style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 4px;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="submitCreateToken()" style="flex: 1; background: #28a745; font-weight: bold; padding: 10px;">Create Token</button>
+                <button onclick="document.getElementById('create-token-modal').style.display='none'" style="background: #444; padding: 10px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Context Menu -->
     <div id="context-menu">
         <ul id="cm-options"></ul>
@@ -375,6 +465,9 @@
             players: [], // e.g. ['player1', 'player2', 'player3', 'player4']
             names: {},
             life: {},
+            mana: {}, // tracks W U B R G C
+            cardBacks: {}, // tracks custom card back url per player role
+            playmats: {}, // Tracks custom playmat URL per player role
             zones: {}, // deck_player1, play_player2, command_player1, etc.
             cardIdCounter: 0
         };
@@ -392,11 +485,17 @@
         const selectedCardIds = new Set();
         let currentSearchZoneKey = null;
         let currentSearchLimit = null;
+        let topXActiveSession = null;
+        let topXModalZone = null;
         let hoveringCard = null;
         
         let currentScale = 1; 
         let dragOffsetX = 0;
         let dragOffsetY = 0;
+
+        /** LOCAL MEDIA CACHE **/
+        let pendingPlaymatUrl = '';
+        let pendingCardBackUrl = '';
 
         /** UI PREFERENCES **/
         let uiPrefs = {
@@ -459,6 +558,7 @@
         function applyUIPrefs() {
             document.documentElement.style.setProperty('--ui-font-size', uiPrefs.fontSize + 'rem');
             document.documentElement.style.setProperty('--hover-scale', uiPrefs.zoomScale);
+            document.documentElement.style.setProperty('--ui-scale', uiPrefs.fontSize); // Sync dice UI scale
             document.getElementById('my-center-zones').style.flexDirection = uiPrefs.handPosTop ? 'column-reverse' : 'column';
             document.getElementById('my-row').style.flexDirection = uiPrefs.sidePosLeft ? 'row-reverse' : 'row';
             
@@ -513,6 +613,12 @@
             if(!state.players.includes(role)) state.players.push(role);
             state.names[role] = name;
             state.life[role] = 20;
+            if(!state.mana) state.mana = {};
+            state.mana[role] = { W:0, U:0, B:0, R:0, G:0, C:0 };
+            if(!state.cardBacks) state.cardBacks = {};
+            if(!state.cardBacks[role]) state.cardBacks[role] = '';
+            if(!state.playmats) state.playmats = {};
+            if(!state.playmats[role]) state.playmats[role] = '';
             ['deck','play','hand','graveyard','exile','command'].forEach(z => {
                 if(!state.zones[z+'_'+role]) state.zones[z+'_'+role] = [];
             });
@@ -673,6 +779,25 @@
                     state.life[payload.target] += payload.amount;
                     broadcastLog(`${playerName} adjusted ${state.names[payload.target]}'s life by ${payload.amount > 0 ? '+'+payload.amount : payload.amount}`);
                     break;
+                case 'MODIFY_MANA':
+                    if (!state.mana) state.mana = {};
+                    if (!state.mana[payload.target]) state.mana[payload.target] = { W:0, U:0, B:0, R:0, G:0, C:0 };
+                    if (payload.amount === 'clear') {
+                        state.mana[payload.target][payload.color] = 0;
+                    } else {
+                        state.mana[payload.target][payload.color] = Math.max(0, state.mana[payload.target][payload.color] + payload.amount);
+                    }
+                    break;
+                case 'SET_CARD_BACK':
+                    if (!state.cardBacks) state.cardBacks = {};
+                    state.cardBacks[player] = payload.cardBackUrl;
+                    broadcastLog(`${playerName} updated their card back.`);
+                    break;
+                case 'SET_PLAYMAT':
+                    if (!state.playmats) state.playmats = {};
+                    state.playmats[player] = payload.playmatUrl;
+                    broadcastLog(`${playerName} updated their playmat.`);
+                    break;
                 case 'ROLL_DICE':
                     broadcastLog(`${playerName} ${payload.sides === 'Coin' ? 'flipped a coin' : 'rolled a D'+payload.sides}: <b>${payload.result}</b>`);
                     break;
@@ -686,6 +811,7 @@
                     let clonedDeck = JSON.parse(JSON.stringify(payload.deck));
                     clonedDeck.forEach(c => { c.id = 'card_' + state.cardIdCounter++; c.facedown = true; c.rotated = false; delete c.x; delete c.y; state.zones[`deck_${player}`].push(c); });
                     state.life[player] = 20;
+                    if(state.mana && state.mana[player]) state.mana[player] = { W:0, U:0, B:0, R:0, G:0, C:0 };
                     shuffleInternal(`deck_${player}`);
                     broadcastLog(`${playerName} reset their board state to a New Game.`);
                     break;
@@ -709,11 +835,26 @@
                     payload.cardIds.forEach((id, idx) => {
                         const info = findCardGlobal(id);
                         if (info) {
-                            const isFromHidden = info.zone.startsWith('hand') || info.zone.startsWith('deck') || (info.card.facedown && info.zone.startsWith('play'));
-                            const isToHidden = payload.toZone.startsWith('hand') || payload.toZone.startsWith('deck') || (info.card.facedown && payload.toZone.startsWith('play'));
+                            const isFromHidden = info.zone.startsWith('hand') || info.zone.startsWith('deck') || info.zone.startsWith('graveyard') || info.zone.startsWith('exile') || info.zone.startsWith('command') || (info.card.facedown && info.zone.startsWith('play'));
+                            const isToHidden = payload.toZone.startsWith('hand') || payload.toZone.startsWith('deck') || payload.toZone.startsWith('graveyard') || payload.toZone.startsWith('exile') || payload.toZone.startsWith('command') || (info.card.facedown && payload.toZone.startsWith('play'));
                             
                             let targetX = payload.x !== undefined ? payload.x + (idx * 0.015) : undefined;
                             let targetY = payload.y !== undefined ? payload.y + (idx * 0.05) : undefined;
+                            
+                            // Magnetic Snapping Check: If dropped on top of an existing card in the Play zone, offset down and to the right
+                            if (payload.toZone.startsWith('play') && targetX !== undefined && targetY !== undefined) {
+                                const existingCards = state.zones[payload.toZone].filter(c => !payload.cardIds.includes(c.id));
+                                for (let ec of existingCards) {
+                                    if (ec.x !== undefined && ec.y !== undefined) {
+                                        if (Math.abs(targetX - ec.x) < 0.06 && Math.abs(targetY - ec.y) < 0.1) {
+                                            targetX = ec.x + 0.015;
+                                            targetY = ec.y + 0.05;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
                             executeMoveCard(id, payload.toZone, payload.index, targetX, targetY);
                             
                             const revealName = (!isFromHidden || !isToHidden || (!info.card.facedown && payload.toZone.startsWith('play')));
@@ -721,6 +862,9 @@
                             broadcastLog(`${playerName} moved ${displayStr} from ${getZoneDisplayName(info.zone)} to ${getZoneDisplayName(payload.toZone)}.`);
                         }
                     });
+                    if (topXActiveSession) {
+                        topXActiveSession = topXActiveSession.filter(c => !payload.cardIds.includes(c.id));
+                    }
                     break;
                 case 'MOVE_CARDS_RANDOM_BOTTOM':
                     let ids = [...payload.cardIds];
@@ -781,6 +925,19 @@
         function rollDice(sides) { requestAction('ROLL_DICE', { sides, result: Math.floor(Math.random() * sides) + 1 }); }
         function rollCoin() { requestAction('ROLL_DICE', { sides: 'Coin', result: Math.random() > 0.5 ? 'Heads' : 'Tails' }); }
 
+        function getManaString(role) {
+            if(!state.mana || !state.mana[role]) return '';
+            const m = state.mana[role];
+            let s = '';
+            if(m.W > 0) s += `<span style="color:#fff;text-shadow:1px 1px 2px #000;margin-right:4px;">☀️${m.W}</span>`;
+            if(m.U > 0) s += `<span style="color:#4dabf7;text-shadow:1px 1px 2px #000;margin-right:4px;">💧${m.U}</span>`;
+            if(m.B > 0) s += `<span style="color:#888;text-shadow:1px 1px 2px #000;margin-right:4px;">💀${m.B}</span>`;
+            if(m.R > 0) s += `<span style="color:#ff6b6b;text-shadow:1px 1px 2px #000;margin-right:4px;">🔥${m.R}</span>`;
+            if(m.G > 0) s += `<span style="color:#40c057;text-shadow:1px 1px 2px #000;margin-right:4px;">🌳${m.G}</span>`;
+            if(m.C > 0) s += `<span style="color:#ccc;text-shadow:1px 1px 2px #000;">⟡${m.C}</span>`;
+            return s.trim() ? `<div style="font-size:0.85rem; margin-top:4px; background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px; display:inline-block;">${s}</div>` : '';
+        }
+
         /** DYNAMIC RENDERING (4 PLAYER SUPPORT) **/
         function buildOpponentsHTML() {
             const row = document.getElementById('opponents-row');
@@ -814,21 +971,29 @@
         function updateLifeUI() {
             const lc = document.getElementById('dynamic-life-container');
             const myHandCount = state.zones['hand_'+myRole] ? state.zones['hand_'+myRole].length : 0;
+            
             lc.innerHTML = `
                 <div class="life-row">
-                    <span>${state.names[myRole] || 'Me'} <span style="font-size: 0.8rem; color: #bbb;">(🖐️ ${myHandCount})</span>:</span>
+                    <div style="display:flex; flex-direction:column; align-items:flex-start;">
+                        <span>${state.names[myRole] || 'Me'} <span style="font-size: 0.8rem; color: #bbb;">(🖐️ ${myHandCount})</span></span>
+                        ${getManaString(myRole)}
+                    </div>
                     <div>
                         <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: '${myRole}', amount: -1})">-</button>
                         <span style="display:inline-block; width: 35px; text-align: center; color: white;">${state.life[myRole] ?? 20}</span>
                         <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: '${myRole}', amount: 1})">+</button>
                     </div>
                 </div>`;
+                
             state.players.forEach(p => {
                 if(p === myRole) return;
                 const pHandCount = state.zones['hand_'+p] ? state.zones['hand_'+p].length : 0;
                 lc.innerHTML += `
                 <div class="life-row">
-                    <span style="color:#aaa">${state.names[p]} <span style="font-size: 0.8rem; color: #888;">(🖐️ ${pHandCount})</span>:</span>
+                    <div style="display:flex; flex-direction:column; align-items:flex-start;">
+                        <span style="color:#aaa">${state.names[p]} <span style="font-size: 0.8rem; color: #888;">(🖐️ ${pHandCount})</span></span>
+                        ${getManaString(p)}
+                    </div>
                     <div>
                         <button class="life-btn" onclick="requestAction('ADJUST_LIFE', {target: '${p}', amount: -1})">-</button>
                         <span style="display:inline-block; width: 35px; text-align: center; color: white;">${state.life[p] ?? 20}</span>
@@ -860,11 +1025,39 @@
 
             if (document.getElementById('search-deck-modal').style.display === 'flex' && currentSearchZoneKey) refreshSearchModalContent();
             renderSelectionHighlight();
+
+            // Render Playmats for all players
+            if (state.playmats) {
+                state.players.forEach(p => {
+                    const zoneEl = (p === myRole) ? document.getElementById('my-play-zone') : document.getElementById(`play_${p}`);
+                    if (zoneEl) {
+                        const url = state.playmats[p] || '';
+                        if (url) {
+                            zoneEl.style.backgroundImage = `url('${url}')`;
+                            zoneEl.style.backgroundSize = 'contain';
+                            zoneEl.style.backgroundPosition = 'center';
+                        } else {
+                            zoneEl.style.backgroundImage = 'none';
+                        }
+                    }
+                });
+            }
+
         }
         
         function renderSelectionHighlight() {
             document.querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'));
             selectedCardIds.forEach(id => { const e = document.getElementById(id); if (e) e.classList.add('selected'); });
+        }
+
+        function getCardOwnerRole(cId) {
+            if (!cId) return myRole;
+            if (cId.startsWith('my-')) return myRole;
+            const parts = cId.split('_');
+            for (let part of parts) {
+                if (state.players && state.players.includes(part)) return part;
+            }
+            return myRole;
         }
 
         function renderZone(arr, containerId, forceDown = false) {
@@ -876,19 +1069,26 @@
             if (countEl) countEl.innerText = arr ? arr.length : 0;
             if (!arr || arr.length === 0) return;
 
+            const ownerRole = containerId.startsWith('my-') ? myRole : (containerId.split('_')[1] || getCardOwnerRole(containerId));
+
             const isStack = containerId.includes('deck') || containerId.includes('graveyard') || containerId.includes('exile') || containerId.includes('command');
             if (isStack) {
-                let c = { ...arr[arr.length - 1] }; if (forceDown) c.facedown = true; el.appendChild(buildCardDOM(c, containerId));
+                let c = { ...arr[arr.length - 1] }; if (forceDown) c.facedown = true; el.appendChild(buildCardDOM(c, containerId, ownerRole));
             } else {
-                arr.forEach(c => { let c2 = { ...c }; if (forceDown) c2.facedown = true; el.appendChild(buildCardDOM(c2, containerId)); });
+                arr.forEach(c => { let c2 = { ...c }; if (forceDown) c2.facedown = true; el.appendChild(buildCardDOM(c2, containerId, ownerRole)); });
             }
         }
 
-        function buildCardDOM(card, cId) {
+        function buildCardDOM(card, cId, explicitOwner = null) {
             const div = document.createElement('div'); div.className = 'card'; div.id = card.id;
-            if (cId.includes(myRole) || cId.startsWith('my-')) div.draggable = true;
+            const ownerRole = explicitOwner || getCardOwnerRole(cId);
+
+            if (cId && (cId.includes(myRole) || cId.startsWith('my-') || ownerRole === myRole)) {
+                div.draggable = true;
+                div.classList.add('my-card');
+            }
             
-            if (cId.includes('play')) { 
+            if (cId === 'my-play-zone' || cId.startsWith('play_')) { 
                 div.style.position = 'absolute';
                 let xp = card.x !== undefined ? card.x : 0.5;
                 let yp = card.y !== undefined ? card.y : 0.5;
@@ -900,8 +1100,54 @@
                 div.style.margin = '0'; 
             }
             
-            if (card.facedown) div.classList.add('facedown');
-            else { if (card.imageUrl) div.style.backgroundImage = `url('${card.imageUrl}')`; else div.innerText = card.name; }
+            if (card.facedown) {
+                div.classList.add('facedown');
+                const cbUrl = (state.cardBacks && state.cardBacks[ownerRole]) ? state.cardBacks[ownerRole] : '';
+                if (cbUrl) {
+                    div.style.setProperty('background', `url('${cbUrl}')`, 'important');
+                    div.style.setProperty('background-size', '100% 100%', 'important');
+                    div.style.setProperty('background-position', 'center', 'important');
+                } else {
+                    div.style.setProperty('background', 'repeating-linear-gradient(45deg, #2b4162, #2b4162 10px, #1a283d 10px, #1a283d 20px)', 'important');
+                    div.style.setProperty('background-size', '100% 100%', 'important');
+                }
+            } else { 
+                if (card.isToken) {
+                    div.style.backgroundColor = card.tokenColorBg || '#eee';
+                    div.style.color = card.tokenColorText || '#000';
+                    div.style.display = 'flex';
+                    div.style.flexDirection = 'column';
+                    div.style.justifyContent = 'space-between';
+                    div.style.alignItems = 'stretch';
+                    div.style.padding = '10px';
+                    div.style.textAlign = 'left';
+                    div.style.backgroundImage = 'none';
+                    
+                    const titleDiv = document.createElement('div');
+                    titleDiv.style.cssText = 'font-weight: bold; font-size: 0.95rem; border-bottom: 1px solid rgba(0,0,0,0.2); padding-bottom: 3px; width: 100%; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;';
+                    titleDiv.innerText = card.tokenName || '';
+                    div.appendChild(titleDiv);
+
+                    const rulesDiv = document.createElement('div');
+                    rulesDiv.style.cssText = 'font-size: 0.8rem; font-weight: normal; flex: 1; display: flex; align-items: flex-start; padding-top: 6px; width: 100%; word-break: break-word; overflow: hidden;';
+                    rulesDiv.innerText = card.tokenRules || '';
+                    div.appendChild(rulesDiv);
+
+                    const footerDiv = document.createElement('div');
+                    footerDiv.style.cssText = 'display: flex; justify-content: flex-end; width: 100%; margin-top: auto;';
+                    if (card.tokenPt) {
+                        const ptBadge = document.createElement('div');
+                        ptBadge.style.cssText = 'background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;';
+                        ptBadge.innerText = card.tokenPt;
+                        footerDiv.appendChild(ptBadge);
+                    }
+                    div.appendChild(footerDiv);
+                } else if (card.imageUrl) {
+                    div.style.backgroundImage = `url('${card.imageUrl}')`; 
+                } else { 
+                    div.innerText = card.name; 
+                } 
+            }
             if (card.rotated) div.classList.add('rotated');
             
             if (card.counters) {
@@ -915,19 +1161,46 @@
                 if (!card.facedown) {
                     hoveringCard = card;
                     const hz = document.getElementById('hover-zoom-display');
-                    hz.style.backgroundImage = card.imageUrl ? `url('${card.imageUrl}')` : 'none';
-                    hz.innerText = card.imageUrl ? '' : card.name;
                     hz.style.width = (200 * uiPrefs.zoomScale) + 'px';
                     hz.style.height = (280 * uiPrefs.zoomScale) + 'px';
                     hz.style.display = 'flex';
+                    if (card.isToken) {
+                        hz.style.backgroundImage = 'none';
+                        hz.style.backgroundColor = card.tokenColorBg || '#eee';
+                        hz.style.color = card.tokenColorText || '#000';
+                        hz.style.flexDirection = 'column';
+                        hz.style.justifyContent = 'space-between';
+                        hz.style.alignItems = 'stretch';
+                        hz.style.padding = '15px';
+                        hz.style.textAlign = 'left';
+                        hz.innerHTML = `
+                            <div style="font-weight: bold; font-size: 1.2rem; border-bottom: 1px solid rgba(0,0,0,0.2); padding-bottom: 6px; width: 100%; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${card.tokenName || ''}</div>
+                            <div style="font-size: 1rem; font-weight: normal; flex: 1; display: flex; align-items: flex-start; padding-top: 10px; width: 100%; word-break: break-word; overflow: hidden;">${card.tokenRules || ''}</div>
+                            <div style="display: flex; justify-content: flex-end; width: 100%; margin-top: auto;">
+                                ${card.tokenPt ? `<div style="background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 1.1rem;">${card.tokenPt}</div>` : ''}
+                            </div>
+                        `;
+                    } else if (card.imageUrl) {
+                        hz.style.backgroundImage = `url('${card.imageUrl}')`;
+                        hz.style.backgroundColor = '#eee';
+                        hz.innerHTML = '';
+                    } else {
+                        hz.style.backgroundImage = 'none';
+                        hz.style.backgroundColor = '#eee';
+                        hz.style.color = 'black';
+                        hz.style.flexDirection = 'column';
+                        hz.style.justifyContent = 'center';
+                        hz.style.padding = '15px';
+                        hz.innerText = card.name;
+                    }
                 }
             });
             div.addEventListener('mouseleave', () => { hoveringCard = null; document.getElementById('hover-zoom-display').style.display = 'none'; });
 
             div.addEventListener('mousedown', (e) => { const rect = div.getBoundingClientRect(); dragOffsetX = (e.clientX - rect.left) / currentScale; dragOffsetY = (e.clientY - rect.top) / currentScale; });
             div.addEventListener('dragstart', (e) => {
-                if (!cId.includes(myRole) && !cId.startsWith('my-')) { e.preventDefault(); return; }
-                if (cId.includes('play')) { div.classList.add('dragging-active'); const img = new Image(); img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; e.dataTransfer.setDragImage(img, 0, 0); }
+                if (!cId.includes(myRole) && !cId.startsWith('my-') && ownerRole !== myRole) { e.preventDefault(); return; }
+                if (cId === 'my-play-zone' || cId.startsWith('play_')) { div.classList.add('dragging-active'); const img = new Image(); img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; e.dataTransfer.setDragImage(img, 0, 0); }
                 if (!selectedCardIds.has(card.id)) { selectedCardIds.clear(); selectedCardIds.add(card.id); renderSelectionHighlight(); }
                 draggedCardIds = Array.from(selectedCardIds);
                 e.dataTransfer.setData('text/plain', 'cards');
@@ -1032,48 +1305,73 @@
         }
         
         /** SEARCH & MODALS **/
-        function openSearchDeckModal(limit = null) { currentSearchZoneKey = `deck_${myRole}`; currentSearchLimit = limit; refreshSearchModalContent(); }
-        function openZoneSearchModal(zoneType, owner) { currentSearchZoneKey = `${zoneType}_${owner}`; currentSearchLimit = null; refreshSearchModalContent(); }
+        function openSearchDeckModal(limit = null) { currentSearchZoneKey = `deck_${myRole}`; currentSearchLimit = limit; topXActiveSession = null; topXModalZone = null; refreshSearchModalContent(); }
+        function openZoneSearchModal(zoneType, owner) { currentSearchZoneKey = `${zoneType}_${owner}`; currentSearchLimit = null; topXActiveSession = null; topXModalZone = null; refreshSearchModalContent(); }
         function closeSearchDeckModal() { 
             if (currentSearchZoneKey === `deck_${myRole}` && document.getElementById('shuffle-after-search').checked) requestAction('SHUFFLE_DECK', {});
-            document.getElementById('search-deck-modal').style.display = 'none'; currentSearchZoneKey = null; 
+            document.getElementById('search-deck-modal').style.display = 'none'; currentSearchZoneKey = null; topXActiveSession = null; topXModalZone = null;
         }
 
         function refreshSearchModalContent() {
-            if (!currentSearchZoneKey) return;
-            const arr = state.zones[currentSearchZoneKey] || [];
-            const [zType, zOwner] = currentSearchZoneKey.split('_');
-            const isMyDeck = currentSearchZoneKey === `deck_${myRole}`;
-            
-            let title = `Search ${state.names[zOwner]}'s ${zType.charAt(0).toUpperCase() + zType.slice(1)}`;
-            if (currentSearchLimit) title = `Top ${currentSearchLimit} of ${title}`;
-            
-            document.getElementById('search-deck-title').innerHTML = `${title} (<span id="search-deck-count">${arr.length}</span> cards)`;
-            document.getElementById('shuffle-checkbox-container').style.display = isMyDeck ? 'flex' : 'none';
+                    if (!currentSearchZoneKey) return;
+                    const arr = state.zones[currentSearchZoneKey] || [];
+                    const [zType, zOwner] = currentSearchZoneKey.split('_');
+                    const isMyDeck = currentSearchZoneKey === `deck_${myRole}`;
 
-            const grid = document.getElementById('search-deck-grid'); grid.innerHTML = '';
-            if (arr.length === 0) { grid.innerHTML = `<div style="color:#888;width:100%;text-align:center;margin-top:50px;">Empty zone.</div>`; return; }
-            
-            const viewArr = currentSearchLimit ? arr.slice(-currentSearchLimit) : arr;
-            viewArr.slice().reverse().forEach(card => {
-                const w = document.createElement('div'); w.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px;background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;border:1px solid #444;';
-                const c = document.createElement('div'); c.className = 'card';
-                if (card.facedown && zOwner !== myRole) { c.classList.add('facedown'); } else { if (card.imageUrl) c.style.backgroundImage = `url('${card.imageUrl}')`; else c.innerText = card.name; }
-                w.appendChild(c);
+                    let title = `Search ${state.names[zOwner]}'s ${zType.charAt(0).toUpperCase() + zType.slice(1)}`;
+                    if (currentSearchLimit) title = `Top ${currentSearchLimit} of ${title}`;
 
-                if (zOwner === myRole) {
-                    const acts = document.createElement('div'); acts.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;justify-content:center;width:200px;';
-                    acts.innerHTML = `
-                        <button onclick="requestAction('MOVE_CARDS', {cardIds:['${card.id}'],toZone:'hand_${myRole}',index:'top'})" style="background:#2b4162;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Hand</button>
-                        <button onclick="requestAction('MOVE_CARDS', {cardIds:['${card.id}'],toZone:'play_${myRole}',index:'top'})" style="background:#3b7b4b;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Play</button>
-                        <button onclick="requestAction('MOVE_CARDS', {cardIds:['${card.id}'],toZone:'graveyard_${myRole}',index:'top'})" style="background:#555;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Grave</button>
-                    `;
-                    w.appendChild(acts);
+                    document.getElementById('search-deck-title').innerHTML = `${title} (<span id="search-deck-count">${arr.length}</span> cards)`;
+                    document.getElementById('shuffle-checkbox-container').style.display = isMyDeck ? 'flex' : 'none';
+
+                    const grid = document.getElementById('search-deck-grid'); grid.innerHTML = '';
+                    if (arr.length === 0) { grid.innerHTML = `<div style="color:#888;width:100%;text-align:center;margin-top:50px;">Empty zone.</div>`; return; }
+
+                    let viewArr;
+                    if (currentSearchLimit) {
+                        if (!topXActiveSession || topXModalZone !== currentSearchZoneKey) {
+                            topXActiveSession = arr.slice(-currentSearchLimit);
+                            topXModalZone = currentSearchZoneKey;
+                        }
+                        // Keep only the cards from the initial snapshot that still exist in the deck
+                        const zoneCardIds = new Set(arr.map(c => c.id));
+                        topXActiveSession = topXActiveSession.filter(c => zoneCardIds.has(c.id));
+                        viewArr = topXActiveSession;
+                    } else {
+                        viewArr = arr;
+                    }
+
+                    if (viewArr.length === 0) { grid.innerHTML = `<div style="color:#888;width:100%;text-align:center;margin-top:50px;">No cards remaining in view.</div>`; return; }
+
+                    viewArr.slice().reverse().forEach(card => {
+                        const w = document.createElement('div'); w.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px;background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;border:1px solid #444;';
+
+                        // Temporarily display the player's own deck cards face up in the modal view
+                        let displayCard = { ...card };
+                        if (currentSearchZoneKey === `deck_${myRole}`) {
+                            displayCard.facedown = false;
+                        }
+
+                        const c = buildCardDOM(displayCard, currentSearchZoneKey, zOwner);
+                        if (displayCard.facedown && zOwner !== myRole) { c.classList.add('facedown'); }
+                        w.appendChild(c);
+
+                        if (zOwner === myRole) {
+                            const acts = document.createElement('div'); acts.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;justify-content:center;width:200px;';
+                            acts.innerHTML = `
+                                <button onclick="requestAction('MOVE_CARDS', {cardIds:['${card.id}'],toZone:'hand_${myRole}',index:'top'})" style="background:#2b4162;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Hand</button>
+                                <button onclick="requestAction('MOVE_CARDS', {cardIds:['${card.id}'],toZone:'play_${myRole}',index:'top'})" style="background:#3b7b4b;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Play</button>
+                                <button onclick="requestAction('MOVE_CARDS', {cardIds:['${card.id}'],toZone:'graveyard_${myRole}',index:'top'})" style="background:#555;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Grave</button>
+                                <button onclick="requestAction('MOVE_CARDS', {cardIds:['${card.id}'],toZone:'exile_${myRole}',index:'top'})" style="background:#555;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Exile</button>
+                                <button onclick="requestAction('MOVE_CARDS', {cardIds:['${card.id}'],toZone:'command_${myRole}',index:'top'})" style="background:#555;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Command</button>
+                                <button onclick="requestAction('MOVE_CARDS', {cardIds:['${card.id}'],toZone:'deck_${myRole}',index:'bottom'})" style="background:#555;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Bottom of Deck</button>
+                            `;
+                            w.appendChild(acts);
+                        }
+                        grid.appendChild(w);
+                    });
+                    document.getElementById('search-deck-modal').style.display = 'flex';
                 }
-                grid.appendChild(w);
-            });
-            document.getElementById('search-deck-modal').style.display = 'flex';
-        }
 
         function confirmNewGame() {
             if (!myInitialDeck) { alert("Please import a deck first."); return; }
@@ -1087,7 +1385,7 @@
             openSearchDeckModal(v);
         }
 
-        /** IMPORTS (Scryfall & Paste) **/
+        /** MEDIA IMPORTS (Scryfall, Playmats, Paste) **/
         async function importTextDeck() {
             const btn = document.querySelector('#import-overlay button'); btn.innerText = "Fetching from Scryfall..."; btn.disabled = true;
             const text = document.getElementById('deck-list').value;
@@ -1160,6 +1458,42 @@
             btn.innerText = "Create Text Card(s)"; btn.disabled = false;
         }
 
+        function submitCreateToken() {
+            const name = document.getElementById('token-name-input').value.trim();
+            const colorKey = document.getElementById('token-color-select').value;
+            const rules = document.getElementById('token-rules-input').value.trim();
+            const pt = document.getElementById('token-pt-input').value.trim();
+
+            let bg = '#4a5568';
+            let textCol = '#ffffff';
+
+            switch(colorKey) {
+                case 'white': bg = '#f8f9fa'; textCol = '#212529'; break;
+                case 'blue': bg = '#2b6cb0'; textCol = '#ffffff'; break;
+                case 'black': bg = '#1a202c'; textCol = '#ffffff'; break;
+                case 'red': bg = '#c53030'; textCol = '#ffffff'; break;
+                case 'green': bg = '#276749'; textCol = '#ffffff'; break;
+                case 'gray': bg = '#4a5568'; textCol = '#ffffff'; break;
+            }
+
+            const newToken = {
+                name: name || 'Token',
+                isToken: true,
+                tokenName: name,
+                tokenColorBg: bg,
+                tokenColorText: textCol,
+                tokenRules: rules,
+                tokenPt: pt,
+                facedown: false,
+                rotated: false
+            };
+
+            document.getElementById('create-token-modal').style.display = 'none';
+            if (activeCreateZone) {
+                requestAction('IMPORT_CARDS', { cards: [newToken], zone: activeCreateZone });
+            }
+        }
+
         function importPokerDeck() {
             let newCards = [];
             ['Hearts', 'Diamonds', 'Clubs', 'Spades'].forEach(s => ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].forEach(v => newCards.push({ name: `${v} of ${s}`, imageUrl: '', facedown: true, rotated: false })));
@@ -1181,6 +1515,65 @@
                 }
             }
         }
+        
+        function handlePlaymatPaste(e, boxEl) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf('image') === 0) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        pendingPlaymatUrl = event.target.result;
+                        boxEl.style.backgroundImage = `url('${pendingPlaymatUrl}')`; boxEl.style.backgroundSize = 'contain'; boxEl.style.backgroundRepeat = 'no-repeat'; boxEl.style.backgroundPosition = 'center'; boxEl.innerText = '';
+                    };
+                    reader.readAsDataURL(item.getAsFile()); e.preventDefault(); break;
+                }
+            }
+        }
+
+        function applyPlaymat() {
+            if (pendingPlaymatUrl) {
+                requestAction('SET_PLAYMAT', { playmatUrl: pendingPlaymatUrl });
+            }
+            document.getElementById('import-playmat-modal').style.display='none';
+        }
+
+        function clearPlaymat() {
+            pendingPlaymatUrl = '';
+            requestAction('SET_PLAYMAT', { playmatUrl: '' });
+            let box = document.getElementById('import-playmat-modal').querySelector('.paste-box');
+            box.style.backgroundImage = 'none'; box.innerText = 'Click Here & Press Ctrl+V to Paste Image';
+            document.getElementById('import-playmat-modal').style.display='none';
+        }
+
+        function handleCardBackPaste(e, boxEl) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf('image') === 0) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        pendingCardBackUrl = event.target.result;
+                        boxEl.style.backgroundImage = `url('${pendingCardBackUrl}')`; boxEl.style.backgroundSize = 'contain'; boxEl.style.backgroundRepeat = 'no-repeat'; boxEl.style.backgroundPosition = 'center'; boxEl.innerText = '';
+                    };
+                    reader.readAsDataURL(item.getAsFile()); e.preventDefault(); break;
+                }
+            }
+        }
+
+        function applyCardBack() {
+            if (pendingCardBackUrl) {
+                requestAction('SET_CARD_BACK', { cardBackUrl: pendingCardBackUrl });
+            }
+            document.getElementById('import-cardback-modal').style.display='none';
+        }
+
+        function clearCardBack() {
+            pendingCardBackUrl = '';
+            requestAction('SET_CARD_BACK', { cardBackUrl: '' });
+            let box = document.getElementById('import-cardback-modal').querySelector('.paste-box');
+            box.style.backgroundImage = 'none'; box.innerText = 'Click Here & Press Ctrl+V to Paste Image';
+            document.getElementById('import-cardback-modal').style.display='none';
+        }
+
         function addImageImportRow() {
             const container = document.getElementById('image-imports-container');
             const row = document.createElement('div'); row.className = 'image-import-row'; row.style.cssText = 'display: flex; gap: 8px; align-items: center; margin-bottom: 8px;'; row.dataset.imageUrl = '';
@@ -1242,6 +1635,7 @@
                         buildMenuOption("Graveyard", () => requestAction('MOVE_CARDS', { cardIds: tIds, toZone: `graveyard_${myRole}`, index: 'top' }));
                         buildMenuOption("Exile", () => requestAction('MOVE_CARDS', { cardIds: tIds, toZone: `exile_${myRole}`, index: 'top' }));
                         buildMenuOption("Command", () => requestAction('MOVE_CARDS', { cardIds: tIds, toZone: `command_${myRole}`, index: 'top' }));
+                        buildMenuOption("Bottom of Deck", () => requestAction('MOVE_CARDS', { cardIds: tIds, toZone: `deck_${myRole}`, index: 'bottom' }));
                         buildMenuOption("Bottom of Deck (Random)", () => requestAction('MOVE_CARDS_RANDOM_BOTTOM', { cardIds: tIds, toZone: `deck_${myRole}` }));
                         buildMenuOption("Shuffle Deck", () => requestAction('SHUFFLE_DECK', {}));
                         buildMenuOption("Flip Over", () => requestAction('FLIP_CARDS', { cardIds: tIds }));
@@ -1254,6 +1648,7 @@
                         buildMenuOption("Command", () => requestAction('MOVE_CARDS', { cardIds: tIds, toZone: `command_${myRole}`, index: 'top' }));
                         buildMenuOption("Top of Deck", () => requestAction('MOVE_CARDS', { cardIds: tIds, toZone: `deck_${myRole}`, index: 'top' }));
                         buildMenuOption("Bottom of Deck", () => requestAction('MOVE_CARDS', { cardIds: tIds, toZone: `deck_${myRole}`, index: 'bottom' }));
+                        buildMenuOption("Bottom of Deck (Random)", () => requestAction('MOVE_CARDS_RANDOM_BOTTOM', { cardIds: tIds, toZone: `deck_${myRole}` }));
                         buildMenuOption("Shuffle into Deck", () => { requestAction('MOVE_CARDS', { cardIds: tIds, toZone: `deck_${myRole}`, index: 'top' }); requestAction('SHUFFLE_DECK', {}); });
                         buildMenuOption("Flip Over", () => requestAction('FLIP_CARDS', { cardIds: tIds }));
                         
@@ -1312,7 +1707,56 @@
                     const bZone = zUI.split('_')[0];
                     if (bZone === 'deck') { buildMenuOption("Search Deck", () => openSearchDeckModal()); buildMenuOption("Search Top X...", () => { document.getElementById('top-x-modal').style.display='flex'; }); }
                     if (['graveyard', 'exile', 'command'].includes(bZone)) buildMenuOption("View All Cards", () => openZoneSearchModal(bZone, myRole));
-                    buildMenuOption("Create Card(s)", () => { activeCreateZone = zUI; document.getElementById('create-card-input').value = ''; document.getElementById('create-card-modal').style.display = 'flex'; });
+                    
+                    if (bZone === 'play') {
+                        buildMenuOption("Create Card(s)", () => { activeCreateZone = zUI; document.getElementById('create-card-input').value = ''; document.getElementById('create-card-modal').style.display = 'flex'; });
+                        buildMenuOption("Create Token", () => { activeCreateZone = zUI; document.getElementById('token-name-input').value = ''; document.getElementById('token-rules-input').value = ''; document.getElementById('token-pt-input').value = ''; document.getElementById('token-color-select').value = 'gray'; document.getElementById('create-token-modal').style.display = 'flex'; });
+                    } else {
+                        buildMenuOption("Create Card(s)", () => { activeCreateZone = zUI; document.getElementById('create-card-input').value = ''; document.getElementById('create-card-modal').style.display = 'flex'; });
+                    }
+                    
+                    // Specific logic for Mana Management in Player's Own Play Zone
+                    if (bZone === 'play') {
+                        const li = document.createElement('li');
+                        li.className = 'cm-submenu-parent';
+                        li.innerHTML = 'Add Mana ▸<ul class="cm-submenu"></ul>';
+                        const sub = li.querySelector('.cm-submenu');
+                        
+                        const manaColors = [
+                            {name: 'White', code: 'W'},
+                            {name: 'Blue', code: 'U'},
+                            {name: 'Black', code: 'B'},
+                            {name: 'Red', code: 'R'},
+                            {name: 'Green', code: 'G'},
+                            {name: 'Colorless', code: 'C'}
+                        ];
+                        
+                        manaColors.forEach(c => {
+                            const subLi = document.createElement('li');
+                            subLi.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:5px 15px;border-bottom:1px solid #333;cursor:default;';
+                            subLi.innerHTML = `<span>${c.name}</span>`;
+                            
+                            const btnContainer = document.createElement('div');
+                            btnContainer.style.cssText = 'display:flex;gap:8px;';
+                            
+                            const minusBtn = document.createElement('button'); minusBtn.innerText = '-';
+                            minusBtn.style.cssText = 'background:#444;color:white;border:1px solid #666;padding:2px 8px;border-radius:4px;cursor:pointer;';
+                            minusBtn.onclick = (ev) => { ev.stopPropagation(); requestAction('MODIFY_MANA', { target: myRole, color: c.code, amount: -1 }); };
+                            
+                            const plusBtn = document.createElement('button'); plusBtn.innerText = '+';
+                            plusBtn.style.cssText = 'background:#444;color:white;border:1px solid #666;padding:2px 8px;border-radius:4px;cursor:pointer;';
+                            plusBtn.onclick = (ev) => { ev.stopPropagation(); requestAction('MODIFY_MANA', { target: myRole, color: c.code, amount: 1 }); };
+
+                            const clearBtn = document.createElement('button'); clearBtn.innerText = '🗑️';
+                            clearBtn.style.cssText = 'background:#8b0000;color:white;border:1px solid #aa0000;padding:2px 8px;border-radius:4px;cursor:pointer;';
+                            clearBtn.onclick = (ev) => { ev.stopPropagation(); requestAction('MODIFY_MANA', { target: myRole, color: c.code, amount: 'clear' }); };
+
+                            btnContainer.append(minusBtn, plusBtn, clearBtn);
+                            subLi.appendChild(btnContainer);
+                            sub.appendChild(subLi);
+                        });
+                        cmOptions.appendChild(li);
+                    }
                 }
             }
             if (cmOptions.children.length > 0) {
