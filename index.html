@@ -122,17 +122,49 @@
         .life-btn { background: #555; color: white; border: none; padding: 2px 10px; cursor: pointer; border-radius: 4px; }
         .life-btn:hover { background: #777; }
         
-        /* Realistic Dice & Coin Graphics - Now dynamically linked to UI Scale */
-        .dice-roller { display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #444; padding-bottom: 10px; justify-content: center; align-items: center; }
-        .dice-roller button { background: linear-gradient(135deg, #f8f9fa, #e9ecef); color: #212529; border: 2px solid #ced4da; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.8); transition: all 0.2s ease; }
-        .dice-roller button:hover { background: linear-gradient(135deg, #ffffff, #dee2e6); border-color: #6c757d; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.4); }
-        .dice-roller button:nth-child(1) { width: calc(40px * var(--ui-scale)); height: calc(38px * var(--ui-scale)); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background: linear-gradient(180deg, #fffae6, #ffe066); border: none; padding-top: 10px; }
-        .dice-roller button:nth-child(2) { width: calc(38px * var(--ui-scale)); height: calc(38px * var(--ui-scale)); border-radius: 8px; background: linear-gradient(145deg, #ffffff, #f1f3f5); border: 2px solid #adb5bd; }
-        .dice-roller button:nth-child(3) { width: calc(38px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 20% 100%, 0% 35%); background: linear-gradient(145deg, #e7f5ff, #74c0fc); border: none; }
-        .dice-roller button:nth-child(4) { width: calc(40px * var(--ui-scale)); height: calc(38px * var(--ui-scale)); clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); background: linear-gradient(145deg, #f3f0ff, #b197fc); border: none; }
-        .dice-roller button:nth-child(5) { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); background: linear-gradient(145deg, #fff5f5, #ff8787); border: none; }
-        .dice-roller button:nth-child(6) { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); border-radius: 50%; background: radial-gradient(circle, #fff3bf 0%, #fab005 100%); border: 2px solid #e67700; color: #5c3c00; }
-        .dice-roller button.coin { width: calc(60px * var(--ui-scale)); height: calc(60px * var(--ui-scale)); border-radius: 50%; background: radial-gradient(circle, #ffe066 0%, #f59f00 70%, #d9480f 100%); border: 3px dashed #fff3bf; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
+        /* Enhanced base dice styles for a 3D, tactile feel */
+        .dice-roller { display: flex; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid #444; padding-bottom: 15px; justify-content: center; align-items: center; }
+        .dice-roller button { 
+            color: #fff; 
+            cursor: pointer; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.3); 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+            font-size: 1.1rem;
+        }
+        .dice-roller button:hover { 
+            transform: translateY(-4px) rotate(5deg) scale(1.1); 
+            box-shadow: 0 8px 15px rgba(0,0,0,0.6); 
+            z-index: 10;
+        }
+
+        /* D4 - Triangle */
+        .dice-roller button:nth-child(1) { width: calc(45px * var(--ui-scale)); height: calc(42px * var(--ui-scale)); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background: linear-gradient(180deg, #ff6b6b, #c92a2a); border: none; padding-top: 12px; }
+
+        /* D6 - Rounded Square */
+        .dice-roller button:nth-child(2) { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); border-radius: 8px; background: linear-gradient(145deg, #4dabf7, #1864ab); border: 2px solid #a5d8ff; }
+
+        /* D8 - Diamond (NEW) */
+        .dice-roller button:nth-child(3) { width: calc(42px * var(--ui-scale)); height: calc(46px * var(--ui-scale)); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); background: linear-gradient(135deg, #51cf66, #2b8a3e); border: none; }
+
+        /* D10 - Kite */
+        .dice-roller button:nth-child(4) { width: calc(42px * var(--ui-scale)); height: calc(45px * var(--ui-scale)); clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 20% 100%, 0% 35%); background: linear-gradient(145deg, #fcc419, #e67700); border: none; padding-top: 6px; }
+
+        /* D12 - Pentagon */
+        .dice-roller button:nth-child(5) { width: calc(42px * var(--ui-scale)); height: calc(42px * var(--ui-scale)); clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); background: linear-gradient(145deg, #cc5de8, #862e9c); border: none; padding-top: 4px; }
+
+        /* D20 - Hexagon */
+        .dice-roller button:nth-child(6) { width: calc(44px * var(--ui-scale)); height: calc(44px * var(--ui-scale)); clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); background: linear-gradient(145deg, #ff922b, #d9480f); border: none; }
+
+        /* D100 - Circle */
+        .dice-roller button:nth-child(7) { width: calc(42px * var(--ui-scale)); height: calc(42px * var(--ui-scale)); border-radius: 50%; background: radial-gradient(circle, #ced4da 0%, #495057 100%); border: 2px solid #adb5bd; color: #212529; text-shadow: none; }
+
+        /* Coin - Keep the cool existing coin but enhance it */
+        .dice-roller button.coin { width: calc(60px * var(--ui-scale)); height: calc(60px * var(--ui-scale)); border-radius: 50%; background: radial-gradient(circle, #ffe066 0%, #f59f00 70%, #d9480f 100%); border: 3px dashed #fff3bf; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
         
         #log { color: #ccc; flex: 1; min-height: 100px; overflow-y: auto; border: 1px inset #444; padding: 5px; background: #111; border-radius: 4px; display: block; }
         #log div { margin-bottom: 4px; border-bottom: 1px solid #222; padding-bottom: 2px; }
@@ -164,6 +196,36 @@
         .cm-submenu-parent { position: relative; }
         .cm-submenu { display: none; position: absolute; left: 100%; top: -1px; background: #2b2b2b; border: 1px solid #555; list-style: none; min-width: 180px; box-shadow: 2px 2px 15px rgba(0,0,0,0.8); z-index: 10001; }
         .cm-submenu-parent:hover .cm-submenu { display: block; }
+
+        /* Life Change Wizard Animation */
+        @keyframes floatAndFade {
+            0% {
+                transform: translate(0, 0) scale(0.8);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(var(--rand-x), var(--rand-y)) scale(1.2);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(calc(var(--rand-x) * 1.5), calc(var(--rand-y) * 1.5 - 40px)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .life-animation-popup {
+            position: absolute;
+            z-index: 2000;
+            pointer-events: none;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            animation: floatAndFade 2s ease-out forwards;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -233,13 +295,14 @@
                 </div>
                 
                 <div class="dice-roller">
-                    <button onclick="rollDice(4)">D4</button>
-                    <button onclick="rollDice(6)">D6</button>
-                    <button onclick="rollDice(10)">D10</button>
-                    <button onclick="rollDice(12)">D12</button>
-                    <button onclick="rollDice(20)">D20</button>
-                    <button onclick="rollDice(100)">D100</button>
-                    <button class="coin" onclick="rollCoin()">Flip<br>Coin</button>
+                    <button onclick="rollDice(4)">4</button>
+                    <button onclick="rollDice(6)">6</button>
+                    <button onclick="rollDice(8)">8</button>
+                    <button onclick="rollDice(10)">10</button>
+                    <button onclick="rollDice(12)">12</button>
+                    <button onclick="rollDice(20)">20</button>
+                    <button onclick="rollDice(100)">100</button>
+                    <button class="coin" onclick="rollCoin()">Flip</button>
                 </div>
 
                 <div class="widget-toggles">
@@ -601,6 +664,34 @@
         }
         window.addEventListener('resize', resizeUI);
 
+        /** KEYBOARD SHORTCUTS **/
+        window.addEventListener('keydown', (e) => {
+            // Ignore shortcuts if the user is typing in an input, textarea, or contenteditable element
+            if (['INPUT', 'TEXTAREA'].includes(e.target.tagName) || e.target.isContentEditable) {
+                return;
+            }
+    
+            // Ensure the game is active/visible
+            if (gameWrapper.style.display === 'none') return;
+
+            const key = e.key.toUpperCase();
+
+            switch (key) {
+                case 'U':
+                    // U = Untap functionality (triggers Untap All for your board)
+                    requestAction('UNTAP_ALL', {});
+                    break;
+                case 'S':
+                    // S = Shuffle the deck
+                    requestAction('SHUFFLE_DECK', {});
+                    break;
+                case 'D':
+                    // D = Draw a card from your deck
+                    requestAction('DRAW_CARDS', { amount: 1 });
+                    break;
+            }
+        });
+
         /** LOGIN LOGIC **/
         codeInput.addEventListener('input', (e) => {
             const valid = e.target.value.trim().length >= 6;
@@ -785,6 +876,7 @@
                 case 'ADJUST_LIFE':
                     state.life[payload.target] += payload.amount;
                     broadcastLog(`${playerName} adjusted ${state.names[payload.target]}'s life by ${payload.amount > 0 ? '+'+payload.amount : payload.amount}`);
+                    triggerLifeAnimation(payload.target, payload.amount); // Triggers the floating wizard animation
                     break;
                 case 'MODIFY_MANA':
                     if (!state.mana) state.mana = {};
@@ -1394,35 +1486,91 @@
 
         /** MEDIA IMPORTS (Scryfall, Playmats, Paste) **/
         async function importTextDeck() {
-            const btn = document.querySelector('#import-overlay button'); btn.innerText = "Fetching from Scryfall..."; btn.disabled = true;
+            const btn = document.querySelector('#import-overlay button'); 
+            btn.innerText = "Fetching from Scryfall..."; 
+            btn.disabled = true;
+    
             const text = document.getElementById('deck-list').value;
-            const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+            const lines = text.split('\n').map(l => l.trim());
+    
+            // Extract only lines between "Deck" and "Sideboard" headers
+            let mainDeckLines = [];
+            let capturing = false;
+            let foundDeckHeader = false;
+
+            for (let line of lines) {
+                const lower = line.toLowerCase();
+                if (lower === 'deck' || lower === 'deck:') {
+                    capturing = true;
+                    foundDeckHeader = true;
+                    continue;
+                }
+                if (lower === 'sideboard' || lower === 'sideboard:' || lower.startsWith('sideboard')) {
+                    capturing = false;
+                    break;
+                }
+                if (capturing && line !== '') {
+                    mainDeckLines.push(line);
+                }
+            }
+
+            // Fallback: If no "Deck" header was found in the paste, default to using all non-empty lines
+            if (!foundDeckHeader) {
+                mainDeckLines = lines.filter(l => l !== '');
+            }
+
             const reqs = [];
-            lines.forEach(line => {
+            mainDeckLines.forEach(line => {
                 let qty = 1, cardStr = line;
-                let match = line.match(/^(\d+)\s+(.+)$/); if (match) { qty = parseInt(match[1]); cardStr = match[2].trim(); }
+                let match = line.match(/^(\d+)\s+(.+)$/); 
+                if (match) { 
+                    qty = parseInt(match[1]); 
+                    cardStr = match[2].trim(); 
+                }
                 let setMatch = cardStr.match(/(.+?)\s+\((.+?)\)\s+(\S+)/); 
                 let idObj = setMatch ? { set: setMatch[2].toLowerCase(), collector_number: setMatch[3].toString() } : { name: cardStr.split('//')[0].trim() };
                 reqs.push({ qty, idObj, originalName: setMatch ? setMatch[1].trim() : cardStr });
             });
+
             const identifiers = Array.from(new Map(reqs.map(r => [r.idObj.name || (r.idObj.set + r.idObj.collector_number), r.idObj])).values());
             let resolved = {}; 
-            for(let i=0; i < identifiers.length; i+=75) {
+    
+            for (let i = 0; i < identifiers.length; i += 75) {
                 try {
-                    const res = await fetch('https://api.scryfall.com/cards/collection', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identifiers: identifiers.slice(i, i+75) }) });
-                    const data = await res.json();
-                    if (data.data) data.data.forEach((scry) => {
-                        let img = (scry.image_uris && scry.image_uris.normal) || (scry.card_faces && scry.card_faces[0].image_uris && scry.card_faces[0].image_uris.normal) || '';
-                        if (scry.name) { resolved[scry.name.toLowerCase()] = img; if (scry.name.includes('//')) resolved[scry.name.split('//')[0].trim().toLowerCase()] = img; }
+                    const res = await fetch('https://api.scryfall.com/cards/collection', { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ identifiers: identifiers.slice(i, i + 75) }) 
                     });
+                    const data = await res.json();
+                    if (data.data) {
+                        data.data.forEach((scry) => {
+                            let img = (scry.image_uris && scry.image_uris.normal) || (scry.card_faces && scry.card_faces[0].image_uris && scry.card_faces[0].image_uris.normal) || '';
+                            if (scry.name) { 
+                                resolved[scry.name.toLowerCase()] = img; 
+                                if (scry.name.includes('//')) resolved[scry.name.split('//')[0].trim().toLowerCase()] = img; 
+                            }
+                        });
+                    }
                 } catch (e) {}
             }
+
             let newCards = [];
-            reqs.forEach(req => { const img = resolved[(req.idObj.name || req.originalName).toLowerCase()] || ''; for(let i=0; i<req.qty; i++) newCards.push({ name: req.originalName, imageUrl: img, facedown: true, rotated: false }); });
-            
+            reqs.forEach(req => { 
+                const img = resolved[(req.idObj.name || req.originalName).toLowerCase()] || ''; 
+                for (let i = 0; i < req.qty; i++) {
+                    newCards.push({ name: req.originalName, imageUrl: img, facedown: true, rotated: false }); 
+                }
+            });
+    
             document.getElementById('import-overlay').style.display = 'none';
-            if(newCards.length > 0) { myInitialDeck = JSON.parse(JSON.stringify(newCards)); requestAction('RESET_GAME', { deck: myInitialDeck }); }
-            btn.innerText = "Fetch & Import Deck"; btn.disabled = false;
+            if (newCards.length > 0) { 
+                myInitialDeck = JSON.parse(JSON.stringify(newCards)); 
+                requestAction('RESET_GAME', { deck: myInitialDeck }); 
+            }
+    
+            btn.innerText = "Conjure Deck"; 
+            btn.disabled = false;
         }
 
         async function submitCreateCardText() {
@@ -1775,6 +1923,44 @@
             }
         });
         function buildMenuOption(text, cb) { const li = document.createElement('li'); li.innerText = text; li.onclick = (e) => { e.stopPropagation(); cm.style.display = 'none'; cb(); }; cmOptions.appendChild(li); }
+
+        /** LIFE CHANGE WIZARD ANIMATION **/
+        function triggerLifeAnimation(targetRole, amount) {
+            // Select the correct play zone container depending on whether it's you or an opponent
+            const playZoneEl = (targetRole === myRole) 
+                ? document.getElementById('my-play-zone') 
+                : document.getElementById('play_' + targetRole);
+    
+            if (!playZoneEl) return;
+
+            const animEl = document.createElement('div');
+            animEl.className = 'life-animation-popup';
+    
+            // Format the sign (+ or -) and text color (green for gain, red for loss)
+            const signStr = amount > 0 ? `+${amount}` : `${amount}`;
+            const colorClass = amount > 0 ? '#40c057' : '#ff6b6b';
+    
+            animEl.innerHTML = `🧙‍♂️ <span style="color: ${colorClass};">${signStr}</span>`;
+    
+            // Random starting position within the play zone bounds
+            const startX = Math.random() * 60 + 20; // percentage
+            const startY = Math.random() * 60 + 20; // percentage
+            animEl.style.left = startX + '%';
+            animEl.style.top = startY + '%';
+    
+            // Random directional drift variables for the CSS animation
+            const randX = (Math.random() - 0.5) * 120 + 'px';
+            const randY = (Math.random() - 0.5) * 120 - 40 + 'px';
+            animEl.style.setProperty('--rand-x', randX);
+            animEl.style.setProperty('--rand-y', randY);
+    
+            playZoneEl.appendChild(animEl);
+    
+            // Automatically remove the element after the 2-second animation concludes
+            setTimeout(() => {
+                animEl.remove();
+            }, 2000);
+        }
     </script>
 </body>
 </html>
