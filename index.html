@@ -1402,65 +1402,80 @@ background-image: url("data:image/svg+xml,%3Csvg version='1.1' id='Layer_1' xmln
 			});
 
 			// 2. Smartly append or update cards
-			cardsToRender.forEach(card => {
-				let existingDom = document.getElementById(card.id);
-				
-				// Only skip rendering updates if it is actively being dragged AND not currently processing a drop
-				if (existingDom && existingDom.classList.contains('dragging-active') && !window.isHandlingDrop) {
-					return; 
-				}
-				
-				// Recreate the DOM element if it doesn't exist or is in the wrong container
-				if (!existingDom || existingDom.parentElement !== el) {
-					if (existingDom) existingDom.remove();
-					let c2 = { ...card }; if (forceDown) c2.facedown = true;
-					el.appendChild(buildCardDOM(c2, containerId, ownerRole));
-				} else {
-					// Update physical position without destroying the active DOM element
-					if (containerId === 'my-play-zone' || containerId.startsWith('play_')) {
-						let xp = card.x !== undefined ? card.x : 0.5;
-						let yp = card.y !== undefined ? card.y : 0.5;
-						if (xp > 2) { xp = xp / 2314; yp = yp / 525; } 
-						existingDom.style.left = (xp * 100) + '%';
-						existingDom.style.top = (yp * 100) + '%';
-					}
-					
-					// Re-apply classes
-					if (card.rotated) existingDom.classList.add('rotated');
-					else existingDom.classList.remove('rotated');
+            cardsToRender.forEach(card => {
+                let existingDom = document.getElementById(card.id);
+                
+                // Only skip rendering updates if it is actively being dragged AND not currently processing a drop
+                if (existingDom && existingDom.classList.contains('dragging-active') && !window.isHandlingDrop) {
+                    return; 
+                }
+                
+                // Recreate the DOM element if it doesn't exist or is in the wrong container
+                if (!existingDom || existingDom.parentElement !== el) {
+                    if (existingDom) existingDom.remove();
+                    let c2 = { ...card }; if (forceDown) c2.facedown = true;
+                    
+                    const newCardDom = buildCardDOM(c2, containerId, ownerRole);
+                    
+                    // If this card was dropped onto a specific target card, place it right after that target in the DOM to layer on top
+                    if (card.targetCardId && containerId.includes('play')) {
+                        const targetDom = document.getElementById(card.targetCardId);
+                        if (targetDom && targetDom.parentElement === el) {
+                            targetDom.after(newCardDom);
+                        } else {
+                            el.appendChild(newCardDom);
+                        }
+                    } else {
+                        el.appendChild(newCardDom);
+                    }
+                } else {
+                    // Update physical position without destroying the active DOM element
+                    if (containerId === 'my-play-zone' || containerId.startsWith('play_')) {
+                        let xp = card.x !== undefined ? card.x : 0.5;
+                        let yp = card.y !== undefined ? card.y : 0.5;
+                        if (xp > 2) { xp = xp / 2314; yp = yp / 525; } 
+                        existingDom.style.left = (xp * 100) + '%';
+                        existingDom.style.top = (yp * 100) + '%';
+                        
+                        // Optional: If you want to bump it to the end of the DOM stack on update so it layers on top:
+                        el.appendChild(existingDom);
+                    }
+                    
+                    // Re-apply classes
+                    if (card.rotated) existingDom.classList.add('rotated');
+                    else existingDom.classList.remove('rotated');
 
-					let shouldBeFacedown = card.facedown || forceDown;
-					if (shouldBeFacedown && !existingDom.classList.contains('facedown')) {
-						existingDom.classList.add('facedown');
-						const cbUrl = (state.cardBacks && state.cardBacks[ownerRole]) ? state.cardBacks[ownerRole] : '';
-						if (cbUrl) {
-							existingDom.style.setProperty('background', `url('${cbUrl}')`, 'important');
-							existingDom.style.setProperty('background-size', '100% 100%', 'important');
-							existingDom.style.setProperty('background-position', 'center', 'important');
-						} else {
-							existingDom.style.setProperty('background', 'repeating-linear-gradient(45deg, #2b4162, #2b4162 10px, #1a283d 10px, #1a283d 20px)', 'important');
-							existingDom.style.setProperty('background-size', '100% 100%', 'important');
-						}
-						existingDom.innerText = '';
-						existingDom.style.backgroundImage = '';
-					} else if (!shouldBeFacedown && existingDom.classList.contains('facedown')) {
-						let c2 = { ...card }; 
-						existingDom.replaceWith(buildCardDOM(c2, containerId, ownerRole));
-					} else {
-						let oldCounters = existingDom.dataset.counters || '{}';
-						// NEW: Track both the numbered counters and the custom label string
-						let newCounters = JSON.stringify({ 
-							c: card.counters || {}, 
-							l: card.customCounterLabel || null 
-						});
-						if (oldCounters !== newCounters) {
-							existingDom.dataset.counters = newCounters;
-							let c2 = { ...card }; if (forceDown) c2.facedown = true;
-							existingDom.replaceWith(buildCardDOM(c2, containerId, ownerRole));
-						}
-					}
-				}
-			});
+                    let shouldBeFacedown = card.facedown || forceDown;
+                    if (shouldBeFacedown && !existingDom.classList.contains('facedown')) {
+                        existingDom.classList.add('facedown');
+                        const cbUrl = (state.cardBacks && state.cardBacks[ownerRole]) ? state.cardBacks[ownerRole] : '';
+                        if (cbUrl) {
+                            existingDom.style.setProperty('background', `url('${cbUrl}')`, 'important');
+                            existingDom.style.setProperty('background-size', '100% 100%', 'important');
+                            existingDom.style.setProperty('background-position', 'center', 'important');
+                        } else {
+                            existingDom.style.setProperty('background', 'repeating-linear-gradient(45deg, #2b4162, #2b4162 10px, #1a283d 10px, #1a283d 20px)', 'important');
+                            existingDom.style.setProperty('background-size', '100% 100%', 'important');
+                        }
+                        existingDom.innerText = '';
+                        existingDom.style.backgroundImage = '';
+                    } else if (!shouldBeFacedown && existingDom.classList.contains('facedown')) {
+                        let c2 = { ...card }; 
+                        existingDom.replaceWith(buildCardDOM(c2, containerId, ownerRole));
+                    } else {
+                        let oldCounters = existingDom.dataset.counters || '{}';
+                        let newCounters = JSON.stringify({ 
+                            c: card.counters || {}, 
+                            l: card.customCounterLabel || null 
+                        });
+                        if (oldCounters !== newCounters) {
+                            existingDom.dataset.counters = newCounters;
+                            let c2 = { ...card }; if (forceDown) c2.facedown = true;
+                            existingDom.replaceWith(buildCardDOM(c2, containerId, ownerRole));
+                        }
+                    }
+                }
+            });
 		}
 
         function buildCardDOM(card, cId, explicitOwner = null) {
@@ -1679,12 +1694,26 @@ background-image: url("data:image/svg+xml,%3Csvg version='1.1' id='Layer_1' xmln
         });
 
         function allowDrop(e) { e.preventDefault(); }
-        function drop(e) {
+		function drop(e) {
             e.preventDefault();
             const zId = e.currentTarget.getAttribute('data-zone-id') || e.currentTarget.id;
             if (!zId.includes(myRole)) return; 
 
-            let payload = { cardIds: draggedCardIds, toZone: zId, index: 'top' };
+            // Detect if dropped directly on top of another card
+            const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
+            const targetCardElement = elementBelow ? elementBelow.closest('.card') : null;
+            let targetCardId = null;
+            if (targetCardElement && !draggedCardIds.includes(targetCardElement.id)) {
+                targetCardId = targetCardElement.id;
+            }
+
+            let payload = { 
+                cardIds: draggedCardIds, 
+                toZone: zId, 
+                index: 'top',
+                targetCardId: targetCardId 
+            };
+
             if (zId.startsWith('play')) {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const logW = rect.width / currentScale;
