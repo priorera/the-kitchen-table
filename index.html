@@ -1101,7 +1101,6 @@ background-image: url("data:image/svg+xml,%3Csvg version='1.1' id='Layer_1' xmln
                         state.zones[`deck_${player}`] = payload.shuffledIds.map(id => deck.find(c => c.id === id)).filter(Boolean);
                     }
                     broadcastLog(`${playerName} reset their board state to a New Game.`);
-					requestAction('DRAW_CARDS', { amount: 7 });
                     break;
                 case 'SHUFFLE_DECK':
                     if (!payload.shuffledIds) {
