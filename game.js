@@ -532,18 +532,24 @@ function processAction(action) {
 			
 					let targetX = payload.x !== undefined ? payload.x + (idx * 0.015) : undefined;
 					let targetY = payload.y !== undefined ? payload.y + (idx * 0.05) : undefined;
+					let effectiveTargetCardId = payload.targetCardId;
 			
 					if (payload.toZone.startsWith('play') && targetX !== undefined && targetY !== undefined) {
-						const existingCards = state.zones[payload.toZone].filter(c => !payload.cardIds.includes(c.id));
-						for (let ec of existingCards) {
-							if (ec.x !== undefined && ec.y !== undefined) {
-								if (Math.abs(targetX - ec.x) < 0.06 && Math.abs(targetY - ec.y) < 0.1) {
-									targetX = ec.x + 0.015; targetY = ec.y + 0.05; break;
-								}
-							}
+						let resolvedTargetCard = null;
+						if (effectiveTargetCardId) {
+							resolvedTargetCard = state.zones[payload.toZone].find(c => c.id === effectiveTargetCardId && !payload.cardIds.includes(c.id));
+						}
+
+						// The proximity/overlap check block has been completely removed here, 
+						// so it will only resolve a target card if it was directly dropped on top.
+
+						if (resolvedTargetCard && resolvedTargetCard.x !== undefined && resolvedTargetCard.y !== undefined) {
+							targetX = resolvedTargetCard.x + 0.015 + (idx * 0.015);
+							targetY = resolvedTargetCard.y + 0.05 + (idx * 0.05);
+							effectiveTargetCardId = resolvedTargetCard.id;
 						}
 					}
-					executeMoveCard(id, payload.toZone, payload.index, targetX, targetY);
+					executeMoveCard(id, payload.toZone, payload.index, targetX, targetY, effectiveTargetCardId);
 			
 					const revealName = (!isFromHidden || !isToHidden || (!info.card.facedown && payload.toZone.startsWith('play')));
 					const displayStr = revealName ? `<b>${info.card.name}</b>` : "a card";
@@ -616,9 +622,10 @@ function processAction(action) {
 function shuffleInternal(key) { const d = state.zones[key]; for (let i = d.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; } }
 function findCardGlobal(id) { for (const [z, arr] of Object.entries(state.zones)) { const idx = arr.findIndex(c => c.id === id); if (idx !== -1) return { card: arr[idx], zone: z, index: idx }; } return null; }
 
-function executeMoveCard(cardId, toZone, index, x, y) {
+function executeMoveCard(cardId, toZone, index, x, y, targetCardId) {
 	const i = findCardGlobal(cardId); if (!i) return;
 	const card = state.zones[i.zone].splice(i.index, 1)[0];
+	
 	if (toZone.startsWith('deck')) card.facedown = true; 
 	if (toZone.startsWith('hand')) card.facedown = false;
 	if (!toZone.startsWith('play')) card.rotated = false;
@@ -628,7 +635,18 @@ function executeMoveCard(cardId, toZone, index, x, y) {
 		 else if (card.x === undefined || i.zone !== toZone) { card.x = 0.5; card.y = 0.5; }
 	} else { delete card.x; delete card.y; }
 	
-	if (index === 'top') state.zones[toZone].push(card); else if (index === 'bottom') state.zones[toZone].unshift(card); else state.zones[toZone].push(card);
+	// If moving within Hand or Play zone with a targetCardId, place it right after that target card in the zone array for proper layering!
+	if (targetCardId && (toZone.startsWith('hand') || toZone.startsWith('play'))) {
+		const targetIdx = state.zones[toZone].findIndex(c => c.id === targetCardId);
+		if (targetIdx !== -1) {
+			state.zones[toZone].splice(targetIdx + 1, 0, card);
+			return; 
+		}
+	}
+	
+	if (index === 'top') state.zones[toZone].push(card); 
+	else if (index === 'bottom') state.zones[toZone].unshift(card); 
+	else state.zones[toZone].push(card);
 }
 
 /** LOCAL LOGIC **/
@@ -810,7 +828,14 @@ function renderZone(arr, containerId, forceDown = false) {
 		
 		// Recreate the DOM element if it doesn't exist or is in the wrong container
 		if (!existingDom || existingDom.parentElement !== el) {
-			if (existingDom) existingDom.remove();
+			if (existingDom) {
+				// FIX: Ensure the hover zoom clears if the element is being destroyed/moved
+				if (hoveringCard && hoveringCard.id === existingDom.id) {
+					hoveringCard = null;
+					document.getElementById('hover-zoom-display').style.display = 'none';
+				}
+				existingDom.remove();
+			}
 			let c2 = { ...card }; if (forceDown) c2.facedown = true;
 			
 			const newCardDom = buildCardDOM(c2, containerId, ownerRole);
@@ -835,7 +860,9 @@ function renderZone(arr, containerId, forceDown = false) {
 				existingDom.style.left = (xp * 100) + '%';
 				existingDom.style.top = (yp * 100) + '%';
 				
-				// Optional: If you want to bump it to the end of the DOM stack on update so it layers on top:
+				el.appendChild(existingDom);
+			} else if (containerId.includes('hand')) {
+				// STRICTLY ISOLATED: Only force DOM re-appends for the Hand!
 				el.appendChild(existingDom);
 			}
 			
@@ -1007,6 +1034,10 @@ function buildCardDOM(card, cId, explicitOwner = null) {
 
 	div.addEventListener('mousedown', (e) => { const rect = div.getBoundingClientRect(); dragOffsetX = (e.clientX - rect.left) / currentScale; dragOffsetY = (e.clientY - rect.top) / currentScale; });
 	div.addEventListener('dragstart', (e) => {
+		// FIX: Proactively hide the hover zoom when dragging begins
+		hoveringCard = null;
+		document.getElementById('hover-zoom-display').style.display = 'none';
+
 		if (!cId.includes(myRole) && !cId.startsWith('my-') && ownerRole !== myRole) { e.preventDefault(); return; }
 		if (cId === 'my-play-zone' || cId.startsWith('play_')) { div.classList.add('dragging-active'); const img = new Image(); img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; e.dataTransfer.setDragImage(img, 0, 0); }
 		if (!selectedCardIds.has(card.id)) { selectedCardIds.clear(); selectedCardIds.add(card.id); renderSelectionHighlight(); }
