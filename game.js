@@ -1262,6 +1262,7 @@ function refreshSearchModalContent() {
 		grid.appendChild(w);
 	});
 	document.getElementById('search-deck-modal').style.display = 'flex';
+	filterSearchModal();
 }
 
 function confirmNewGame() {
